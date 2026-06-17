@@ -8,6 +8,8 @@ const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const productRoutes = require('./routes/productRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -63,6 +65,8 @@ app.get('/api/v1/health', (req, res) => {
 
 // API Routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/categories', categoryRoutes);
+app.use('/api/v1/products', productRoutes);
 
 // --------------- Error Handling ---------------
 
