@@ -5,6 +5,8 @@ import { ArrowLeft, MapPin, CreditCard, ShieldCheck, CheckCircle2, AlertTriangle
 import orderService from '../services/orderService';
 import { formatCurrency, formatDate } from '../utils/format';
 import Spinner from '../components/common/Spinner';
+import paymentService from '../services/paymentService';
+import StripeCardForm from '../components/checkout/StripeCardForm';
 
 export default function OrderDetails() {
   const { id } = useParams();
@@ -12,16 +14,43 @@ export default function OrderDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Pay form state
-  const [cardDetails, setCardDetails] = useState({
-    number: '',
-    holder: '',
-    expiry: '',
-    cvv: '',
+  // Stripe Payment Gateway states
+  const [paymentIntentData, setPaymentIntentData] = useState({
+    clientSecret: null,
+    isSimulated: false,
+    loading: false,
+    error: null,
   });
   const [payError, setPayError] = useState('');
   const [paySuccess, setPaySuccess] = useState('');
   const [isPaying, setIsPaying] = useState(false);
+
+  const getPaymentIntent = async (orderId) => {
+    try {
+      setPaymentIntentData(prev => ({ ...prev, loading: true, error: null }));
+      const res = await paymentService.createPaymentIntent(orderId);
+      if (res.success) {
+        setPaymentIntentData({
+          clientSecret: res.clientSecret,
+          isSimulated: res.isSimulated,
+          loading: false,
+          error: null,
+        });
+      } else {
+        setPaymentIntentData(prev => ({
+          ...prev,
+          loading: false,
+          error: res.message || 'Failed to initialize payment gateway',
+        }));
+      }
+    } catch (err) {
+      setPaymentIntentData(prev => ({
+        ...prev,
+        loading: false,
+        error: err.response?.data?.message || err.message || 'Failed to initialize payment gateway',
+      }));
+    }
+  };
 
   const fetchOrder = async () => {
     try {
@@ -29,6 +58,9 @@ export default function OrderDetails() {
       const data = await orderService.getOrderById(id);
       if (data.success) {
         setOrder(data.order);
+        if (!data.order.isPaid && data.order.paymentMethod === 'Card') {
+          getPaymentIntent(data.order._id);
+        }
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Error fetching order details');
@@ -41,46 +73,19 @@ export default function OrderDetails() {
     fetchOrder();
   }, [id]);
 
-  const handlePaySubmit = async (e) => {
-    e.preventDefault();
+  const handlePaymentSuccess = async (paymentResult) => {
+    setIsPaying(true);
     setPayError('');
     setPaySuccess('');
-
-    // Validations
-    const numNoSpaces = cardDetails.number.replace(/\s+/g, '');
-    if (!/^\d{16}$/.test(numNoSpaces)) {
-      setPayError('Must be a 16-digit card number');
-      return;
-    }
-    if (!cardDetails.holder.trim()) {
-      setPayError('Cardholder name is required');
-      return;
-    }
-    if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(cardDetails.expiry)) {
-      setPayError('Expiry must be MM/YY');
-      return;
-    }
-    if (!/^\d{3}$/.test(cardDetails.cvv)) {
-      setPayError('Must be a 3-digit CVV');
-      return;
-    }
-
-    setIsPaying(true);
     try {
-      const res = await orderService.payOrder(order._id, {
-        id: `PAY-MOCK-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-        status: 'COMPLETED',
-        update_time: new Date().toISOString(),
-        email_address: order.user?.email || 'customer@shopsphere.com',
-      });
-
+      const res = await orderService.payOrder(order._id, paymentResult);
       if (res.success) {
         setPaySuccess('Payment successful!');
         // Refresh order details to show updated status
         await fetchOrder();
       }
     } catch (err) {
-      setPayError(err.response?.data?.message || 'Payment failed. Please try again.');
+      setPayError(err.response?.data?.message || 'Failed to save payment status on server. Please contact support.');
     } finally {
       setIsPaying(false);
     }
@@ -278,89 +283,38 @@ export default function OrderDetails() {
 
           {/* Payment module (if unpaid and Card payment method) */}
           {!order.isPaid && order.paymentMethod === 'Card' && (
-            <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-4">
-              <h3 className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <ShieldCheck className="h-4.5 w-4.5 text-primary-500" /> Secure Payment Gateway
-              </h3>
-              
-              {payError && (
-                <div className="p-3 bg-danger-light border border-danger/10 text-danger-dark font-semibold text-xs rounded-xl">
-                  {payError}
+            <div className="space-y-4">
+              {paymentIntentData.loading ? (
+                <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm flex flex-col items-center justify-center py-8 space-y-3">
+                  <Spinner size="md" />
+                  <p className="text-xs text-surface-500">Initializing secure payment gateway...</p>
                 </div>
-              )}
-              {paySuccess && (
-                <div className="p-3 bg-success-light border border-success/10 text-success-dark font-semibold text-xs rounded-xl">
-                  {paySuccess}
+              ) : paymentIntentData.error ? (
+                <div className="card p-5 border border-danger/25 bg-danger-light/10 text-danger rounded-2xl shadow-sm space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-danger-dark">Gateway Error</p>
+                  <p className="text-xs text-danger-dark">{paymentIntentData.error}</p>
                 </div>
-              )}
-
-              <form onSubmit={handlePaySubmit} className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Card Number"
-                  value={cardDetails.number}
-                  maxLength={19}
-                  onChange={(e) => {
-                    const val = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
-                    setCardDetails({ ...cardDetails, number: val });
-                    setPayError('');
-                  }}
-                  className="input-field text-xs py-2"
-                />
-                <input
-                  type="text"
-                  placeholder="Cardholder Name"
-                  value={cardDetails.holder}
-                  onChange={(e) => {
-                    setCardDetails({ ...cardDetails, holder: e.target.value });
-                    setPayError('');
-                  }}
-                  className="input-field text-xs py-2"
-                />
-                <div className="grid grid-cols-2 gap-3">
-                  <input
-                    type="text"
-                    placeholder="Expiry (MM/YY)"
-                    value={cardDetails.expiry}
-                    maxLength={5}
-                    onChange={(e) => {
-                      let val = e.target.value.replace(/\D/g, '');
-                      if (val.length > 2) {
-                        val = `${val.substring(0, 2)}/${val.substring(2, 4)}`;
-                      }
-                      setCardDetails({ ...cardDetails, expiry: val });
-                      setPayError('');
-                    }}
-                    className="input-field text-xs py-2"
-                  />
-                  <input
-                    type="password"
-                    placeholder="CVV"
-                    value={cardDetails.cvv}
-                    maxLength={3}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, '');
-                      setCardDetails({ ...cardDetails, cvv: val });
-                      setPayError('');
-                    }}
-                    className="input-field text-xs py-2"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={isPaying}
-                  className="w-full btn-primary py-3 text-xs rounded-xl flex items-center justify-center gap-1.5"
-                >
-                  {isPaying ? (
-                    <>
-                      <RefreshCw className="h-4.5 w-4.5 animate-spin" /> Processing Payment...
-                    </>
-                  ) : (
-                    `Pay ${formatCurrency(order.totalPrice)}`
+              ) : paymentIntentData.clientSecret ? (
+                <div className="space-y-4">
+                  {payError && (
+                    <div className="p-3 bg-danger-light border border-danger/10 text-danger-dark font-semibold text-xs rounded-xl">
+                      {payError}
+                    </div>
                   )}
-                </button>
-              </form>
+                  {paySuccess && (
+                    <div className="p-3 bg-success-light border border-success/10 text-success-dark font-semibold text-xs rounded-xl">
+                      {paySuccess}
+                    </div>
+                  )}
+                  <StripeCardForm
+                    clientSecret={paymentIntentData.clientSecret}
+                    amount={order.totalPrice}
+                    isSimulated={paymentIntentData.isSimulated}
+                    onSuccess={handlePaymentSuccess}
+                    onError={(err) => setPayError(err)}
+                  />
+                </div>
+              ) : null}
             </div>
           )}
         </div>

@@ -98,19 +98,6 @@ export default function Checkout() {
 
   // Validate Card Details
   const handlePaymentNext = () => {
-    if (paymentMethod === 'Card') {
-      const errors = {};
-      const numNoSpaces = cardDetails.number.replace(/\s+/g, '');
-      if (!/^\d{16}$/.test(numNoSpaces)) errors.number = 'Must be a 16-digit card number';
-      if (!cardDetails.holder.trim()) errors.holder = 'Cardholder name is required';
-      if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(cardDetails.expiry)) errors.expiry = 'Must be in MM/YY format';
-      if (!/^\d{3}$/.test(cardDetails.cvv)) errors.cvv = 'Must be a 3-digit CVV';
-
-      if (Object.keys(errors).length > 0) {
-        setPaymentErrors(errors);
-        return;
-      }
-    }
     setStep(3);
   };
 
@@ -152,17 +139,6 @@ export default function Checkout() {
 
       if (res.success && res.order) {
         const orderId = res.order._id;
-
-        // If paying with Card, perform mock payment transaction
-        if (paymentMethod === 'Card') {
-          await orderService.payOrder(orderId, {
-            id: `PAY-MOCK-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-            status: 'COMPLETED',
-            update_time: new Date().toISOString(),
-            email_address: user?.email || 'customer@shopsphere.com',
-          });
-        }
-
         clearCart();
         navigate(`/orders/${orderId}`);
       }
@@ -437,86 +413,19 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                {/* Card input forms */}
+                {/* Card input details replaced by message */}
                 {paymentMethod === 'Card' && (
-                  <div className="p-5 bg-surface-50 dark:bg-surface-950/50 border border-surface-150 dark:border-surface-800/80 rounded-2xl space-y-4">
+                  <div className="p-5 bg-surface-50 dark:bg-surface-950/50 border border-surface-150 dark:border-surface-800/80 rounded-2xl space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-surface-200 dark:border-surface-800">
-                      <span className="text-xs font-bold text-surface-700 dark:text-surface-300 uppercase tracking-wider">Credit Card Information</span>
+                      <span className="text-xs font-bold text-surface-700 dark:text-surface-300 uppercase tracking-wider">Stripe Payment Options</span>
                       <div className="flex gap-1">
                         <div className="h-5 w-8 bg-surface-200 dark:bg-surface-850 rounded border border-surface-300 dark:border-surface-750 flex items-center justify-center text-[8px] font-bold">VISA</div>
                         <div className="h-5 w-8 bg-surface-200 dark:bg-surface-850 rounded border border-surface-300 dark:border-surface-750 flex items-center justify-center text-[8px] font-bold">MC</div>
                       </div>
                     </div>
-
-                    <div className="space-y-3.5">
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="Card number (16 digits)"
-                          maxLength={19}
-                          value={cardDetails.number}
-                          onChange={(e) => {
-                            // Format number in 4-digit groups
-                            const val = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
-                            setCardDetails({ ...cardDetails, number: val });
-                            setPaymentErrors({ ...paymentErrors, number: '' });
-                          }}
-                          className={`input-field text-sm py-2.5 ${paymentErrors.number ? 'border-danger focus:ring-danger' : ''}`}
-                        />
-                        {paymentErrors.number && <p className="text-[10px] text-danger font-semibold mt-1">{paymentErrors.number}</p>}
-                      </div>
-
-                      <div>
-                        <input
-                          type="text"
-                          placeholder="Cardholder Name"
-                          value={cardDetails.holder}
-                          onChange={(e) => {
-                            setCardDetails({ ...cardDetails, holder: e.target.value });
-                            setPaymentErrors({ ...paymentErrors, holder: '' });
-                          }}
-                          className={`input-field text-sm py-2.5 ${paymentErrors.holder ? 'border-danger focus:ring-danger' : ''}`}
-                        />
-                        {paymentErrors.holder && <p className="text-[10px] text-danger font-semibold mt-1">{paymentErrors.holder}</p>}
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3.5">
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Expiry (MM/YY)"
-                            maxLength={5}
-                            value={cardDetails.expiry}
-                            onChange={(e) => {
-                              // format expiry with slash
-                              let val = e.target.value.replace(/\D/g, '');
-                              if (val.length > 2) {
-                                val = `${val.substring(0, 2)}/${val.substring(2, 4)}`;
-                              }
-                              setCardDetails({ ...cardDetails, expiry: val });
-                              setPaymentErrors({ ...paymentErrors, expiry: '' });
-                            }}
-                            className={`input-field text-sm py-2.5 ${paymentErrors.expiry ? 'border-danger focus:ring-danger' : ''}`}
-                          />
-                          {paymentErrors.expiry && <p className="text-[10px] text-danger font-semibold mt-1">{paymentErrors.expiry}</p>}
-                        </div>
-                        <div>
-                          <input
-                            type="password"
-                            placeholder="CVV (3 digits)"
-                            maxLength={3}
-                            value={cardDetails.cvv}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/\D/g, '');
-                              setCardDetails({ ...cardDetails, cvv: val });
-                              setPaymentErrors({ ...paymentErrors, cvv: '' });
-                            }}
-                            className={`input-field text-sm py-2.5 ${paymentErrors.cvv ? 'border-danger focus:ring-danger' : ''}`}
-                          />
-                          {paymentErrors.cvv && <p className="text-[10px] text-danger font-semibold mt-1">{paymentErrors.cvv}</p>}
-                        </div>
-                      </div>
-                    </div>
+                    <p className="text-xs text-surface-500 leading-relaxed">
+                      You will process card payments securely via the Stripe Gateway on the order details page after placing your order.
+                    </p>
                   </div>
                 )}
 
@@ -581,7 +490,7 @@ export default function Checkout() {
                       {paymentMethod === 'Card' ? (
                         <span className="flex items-center gap-1.5">
                           <CreditCard className="h-4 w-4 text-primary-500" />
-                          Mock Credit Card (ending in {cardDetails.number.slice(-4)})
+                          Credit / Debit Card (via Stripe)
                         </span>
                       ) : (
                         'Cash on Delivery (COD)'

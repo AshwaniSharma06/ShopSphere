@@ -3,6 +3,12 @@ import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe(
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_simulated_key_shopsphere'
+);
 
 // Layout
 import Navbar from './components/layout/Navbar';
@@ -36,8 +42,9 @@ export default function App() {
       <AuthProvider>
         <WishlistProvider>
           <CartProvider>
-            <Router>
-              <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-950 transition-colors duration-300">
+            <Elements stripe={stripePromise}>
+              <Router>
+                <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-surface-950 transition-colors duration-300">
                 <Navbar />
 
                 <main className="flex-grow">
@@ -119,7 +126,8 @@ export default function App() {
 
                 <Footer />
               </div>
-            </Router>
+              </Router>
+            </Elements>
           </CartProvider>
         </WishlistProvider>
       </AuthProvider>
