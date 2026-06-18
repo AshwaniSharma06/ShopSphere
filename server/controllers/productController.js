@@ -1,5 +1,8 @@
 const Product = require('../models/Product');
 const generateQR = require('../utils/generateQR');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const Order = require('../models/Order');
 
 /**
  * @desc    Get products with search, filter, sort, and pagination
@@ -264,6 +267,163 @@ const createProductReview = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get related product recommendations (same category or matching tags)
+ * @route   GET /api/v1/products/:id/recommendations
+ * @access  Public
+ */
+const getProductRecommendations = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      res.status(404);
+      throw new Error('Product not found');
+    }
+
+    // Find products in the same category or matching tags (excluding self)
+    const query = {
+      _id: { $ne: product._id },
+      $or: [
+        { category: product.category },
+        { tags: { $in: product.tags } }
+      ]
+    };
+
+    const recommendations = await Product.find(query)
+      .populate('category', 'name slug')
+      .sort({ rating: -1, numReviews: -1 })
+      .limit(4)
+      .lean();
+
+    // Fallback if not enough matching products found: get top rated products
+    if (recommendations.length < 4) {
+      const excludeIds = [product._id, ...recommendations.map(r => r._id)];
+      const fallback = await Product.find({ _id: { $nin: excludeIds } })
+        .populate('category', 'name slug')
+        .sort({ rating: -1 })
+        .limit(4 - recommendations.length)
+        .lean();
+      recommendations.push(...fallback);
+    }
+
+    res.status(200).json({
+      success: true,
+      products: recommendations,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get personalized product recommendations for homepage
+ *          Supports both authenticated users (similarity to wishlist/orders) and guest fallbacks.
+ * @route   GET /api/v1/products/recommendations
+ * @access  Public
+ */
+const getPersonalizedRecommendations = async (req, res, next) => {
+  try {
+    let user = null;
+
+    // Optional decode token if header present to support both guests and logged-in users
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      try {
+        const token = req.headers.authorization.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        user = await User.findById(decoded.id).populate('wishlist');
+      } catch (err) {
+        // Token invalid or expired, proceed in guest mode
+      }
+    }
+
+    let recommendations = [];
+    const preferenceCategoryIds = [];
+    const preferenceTags = [];
+    const excludeProductIds = [];
+
+    if (user) {
+      if (user.wishlist && user.wishlist.length > 0) {
+        user.wishlist.forEach((p) => {
+          if (p.category) preferenceCategoryIds.push(p.category.toString());
+          if (p.tags) preferenceTags.push(...p.tags);
+          excludeProductIds.push(p._id.toString());
+        });
+      }
+
+      // Fetch user's orders to include category/tags from ordered items
+      try {
+        const orders = await Order.find({ user: user._id }).populate({
+          path: 'orderItems.product',
+          select: 'category tags'
+        });
+        orders.forEach((order) => {
+          order.orderItems.forEach((item) => {
+            if (item.product) {
+              if (item.product.category) preferenceCategoryIds.push(item.product.category.toString());
+              if (item.product.tags) preferenceTags.push(...item.product.tags);
+              excludeProductIds.push(item.product._id.toString());
+            }
+          });
+        });
+      } catch (orderErr) {
+        console.error('Error fetching user orders for recommendations:', orderErr);
+      }
+    }
+
+    if (preferenceCategoryIds.length > 0 || preferenceTags.length > 0) {
+      // De-duplicate lists
+      const uniqueCategoryIds = [...new Set(preferenceCategoryIds)];
+      const uniqueTags = [...new Set(preferenceTags)];
+      const uniqueExcludeIds = [...new Set(excludeProductIds)];
+
+      const query = {
+        _id: { $nin: uniqueExcludeIds },
+        $or: [
+          { category: { $in: uniqueCategoryIds } },
+          { tags: { $in: uniqueTags } }
+        ]
+      };
+
+      recommendations = await Product.find(query)
+        .populate('category', 'name slug')
+        .sort({ rating: -1 })
+        .limit(4)
+        .lean();
+    }
+
+    // Fallback: If no recommendations yet (or guest mode), return highest-rated trending products
+    if (recommendations.length < 4) {
+      const excludeIds = recommendations.map((r) => r._id.toString());
+      if (user && user.wishlist) {
+        user.wishlist.forEach(item => excludeIds.push(item._id.toString()));
+      }
+
+      // Also exclude ordered product IDs
+      excludeProductIds.forEach(id => excludeIds.push(id));
+
+      const uniqueExcludeIds = [...new Set(excludeIds)];
+
+      const fallback = await Product.find({ _id: { $nin: uniqueExcludeIds } })
+        .populate('category', 'name slug')
+        .sort({ rating: -1, isTrending: -1 })
+        .limit(4 - recommendations.length)
+        .lean();
+
+      recommendations.push(...fallback);
+    }
+
+    res.status(200).json({
+      success: true,
+      products: recommendations,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
@@ -273,4 +433,6 @@ module.exports = {
   updateProduct,
   deleteProduct,
   createProductReview,
+  getProductRecommendations,
+  getPersonalizedRecommendations,
 };

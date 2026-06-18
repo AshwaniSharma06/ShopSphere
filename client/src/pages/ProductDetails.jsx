@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Truck,
   RotateCcw,
+  Sparkles,
 } from 'lucide-react';
 import productService from '../services/productService';
 import { useAuth } from '../context/AuthContext';
@@ -20,6 +21,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { formatCurrency, calcDiscountedPrice, formatDate } from '../utils/format';
 import Spinner from '../components/common/Spinner';
+import ProductCard from '../components/product/ProductCard';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -27,12 +29,14 @@ export default function ProductDetails() {
   const { isAuthenticated } = useAuth();
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  
-  const inWishlist = product ? isInWishlist(product._id) : false;
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [recLoading, setRecLoading] = useState(true);
+  
+  const inWishlist = product ? isInWishlist(product._id) : false;
   
   // Image gallery state
   const [activeImage, setActiveImage] = useState('');
@@ -56,6 +60,19 @@ export default function ProductDetails() {
         setProduct(data.product);
         if (data.product.images && data.product.images.length > 0) {
           setActiveImage(data.product.images[0]);
+        }
+        
+        // Fetch similarity recommendations
+        try {
+          setRecLoading(true);
+          const recData = await productService.getProductRecommendations(id);
+          if (recData.success) {
+            setRecommendations(recData.products || []);
+          }
+        } catch (recErr) {
+          console.error('Error fetching recommendations:', recErr);
+        } finally {
+          setRecLoading(false);
         }
       } else {
         setError('Product not found');
@@ -426,6 +443,32 @@ export default function ProductDetails() {
           </div>
         </div>
       </div>
+
+      {/* AI Recommendations / You May Also Like Section */}
+      {recLoading ? (
+        <div className="py-12 flex items-center justify-center">
+          <Spinner size="md" />
+        </div>
+      ) : (
+        recommendations.length > 0 && (
+          <section className="mt-16">
+            <div className="border-b border-surface-200/50 dark:border-surface-800 pb-5 mb-10">
+              <h2 className="text-2xl font-bold text-surface-900 dark:text-white flex items-center gap-2">
+                <Sparkles className="h-6 w-6 text-primary-500 animate-pulse-soft" /> You May Also Like
+              </h2>
+              <p className="text-sm text-surface-500 mt-1.5">
+                Smart similarity suggestions handpicked by our AI model
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {recommendations.map((recProduct) => (
+                <ProductCard key={recProduct._id} product={recProduct} />
+              ))}
+            </div>
+          </section>
+        )
+      )}
 
       <hr className="border-surface-200 dark:border-surface-800/80 my-16" />
 

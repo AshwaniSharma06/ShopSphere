@@ -1,8 +1,41 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, ShoppingBag, Sparkles, Shield, Truck } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Sparkles, Shield, Truck, Flame } from 'lucide-react';
+import productService from '../services/productService';
+import ProductCard from '../components/product/ProductCard';
+import { useAuth } from '../context/AuthContext';
+import Spinner from '../components/common/Spinner';
 
 export default function Home() {
+  const { isAuthenticated } = useAuth();
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [aiRecommendations, setAiRecommendations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      setLoading(true);
+      try {
+        const [featuredRes, trendingRes, recommendRes] = await Promise.all([
+          productService.getFeatured(4),
+          productService.getTrending(4),
+          productService.getRecommendations(),
+        ]);
+        setFeaturedProducts(featuredRes.products || []);
+        setTrendingProducts(trendingRes.products || []);
+        setAiRecommendations(recommendRes.products || []);
+      } catch (err) {
+        console.error('Error fetching homepage data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHomeData();
+  }, [isAuthenticated]);
+
   return (
     <div>
       {/* Hero Section */}
@@ -54,9 +87,11 @@ export default function Home() {
               <Link to="/shop" className="btn-primary text-base px-8 py-3.5 gap-2">
                 Browse Products <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link to="/register" className="btn-secondary text-base px-8 py-3.5 gap-2">
-                Create Account
-              </Link>
+              {!isAuthenticated && (
+                <Link to="/register" className="btn-secondary text-base px-8 py-3.5 gap-2">
+                  Create Account
+                </Link>
+              )}
             </motion.div>
           </div>
         </div>
@@ -94,22 +129,99 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Placeholder sections — will be built out in Phase 5 */}
-      <section className="container-custom py-16">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-surface-900 dark:text-white">
-            Featured Products
-          </h2>
-          <p className="text-surface-500 dark:text-surface-400 mt-2">
-            Handpicked by our team, just for you
-          </p>
+      {/* Dynamic Product Sections */}
+      {loading ? (
+        <div className="py-24 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <Spinner size="lg" className="mx-auto" />
+            <p className="text-surface-500 dark:text-surface-400 font-medium">Loading recommendations...</p>
+          </div>
         </div>
-        <div className="p-16 border-2 border-dashed border-surface-200 dark:border-surface-800 rounded-3xl text-center text-surface-400">
-          <ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-40" />
-          <p className="text-lg font-medium">Product catalog coming in Phase 2</p>
-          <p className="text-sm mt-1">Products will appear here once the catalog is built</p>
+      ) : (
+        <div className="space-y-20 py-20">
+          {/* Featured Products */}
+          {featuredProducts.length > 0 && (
+            <section className="container-custom">
+              <div className="flex justify-between items-end mb-10">
+                <div>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
+                    <Sparkles className="h-7 w-7 text-primary-500" /> Featured Products
+                  </h2>
+                  <p className="text-surface-500 dark:text-surface-400 mt-2">
+                    Handpicked by our team, just for you
+                  </p>
+                </div>
+                <Link to="/shop?featured=true" className="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
+                  View All <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* AI Personalized Recommendations */}
+          {aiRecommendations.length > 0 && (
+            <section className="relative overflow-hidden bg-gradient-to-b from-primary-50/30 to-transparent dark:from-primary-950/10 dark:to-transparent py-12 border-y border-surface-100/80 dark:border-surface-800/40">
+              <div className="container-custom">
+                <div className="mb-10">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-bold uppercase tracking-wider mb-3">
+                    <Sparkles className="h-3 w-3" /> Smart Recommendations
+                  </span>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
+                    Selected For You
+                  </h2>
+                  <p className="text-surface-500 dark:text-surface-400 mt-2">
+                    Personalized AI suggestions based on your preferences
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  {aiRecommendations.map((product) => (
+                    <div key={product._id} className="relative">
+                      {/* AI choice indicator badge */}
+                      <span className="absolute top-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-2.5 py-1 text-[9px] font-bold text-white bg-primary-600 rounded-lg uppercase tracking-wide shadow-md">
+                        <Sparkles className="h-2.5 w-2.5" /> AI Pick
+                      </span>
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
+
+          {/* Trending Products */}
+          {trendingProducts.length > 0 && (
+            <section className="container-custom">
+              <div className="flex justify-between items-end mb-10">
+                <div>
+                  <h2 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
+                    <Flame className="h-7 w-7 text-amber-500" /> Trending Now
+                  </h2>
+                  <p className="text-surface-500 dark:text-surface-400 mt-2">
+                    The hottest items bought by our community
+                  </p>
+                </div>
+                <Link to="/shop?trending=true" className="text-sm font-bold text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1">
+                  View All <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {trendingProducts.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
-      </section>
+      )}
     </div>
   );
 }
+

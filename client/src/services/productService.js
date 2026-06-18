@@ -25,6 +25,16 @@ const productService = {
     const { data } = await api.post(`/products/${productId}/reviews`, reviewData);
     return data;
   },
+
+  getRecommendations: async () => {
+    const { data } = await api.get('/products/recommendations');
+    return data;
+  },
+
+  getProductRecommendations: async (productId) => {
+    const { data } = await api.get(`/products/${productId}/recommendations`);
+    return data;
+  },
 };
 
 export default productService;
