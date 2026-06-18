@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Trash2, Minus, Plus, ArrowLeft, ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -7,6 +7,7 @@ import Spinner from '../components/common/Spinner';
 
 export default function Cart() {
   const { cart, loading, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const shippingThreshold = 1000;
   const shippingCost = cartTotal >= shippingThreshold || cartTotal === 0 ? 0 : 99;
@@ -257,7 +258,7 @@ export default function Cart() {
 
                 {/* Checkout CTA */}
                 <button
-                  onClick={() => alert('Proceeding to checkout... (Will be configured in Phase 4)')}
+                  onClick={() => navigate('/checkout')}
                   className="w-full btn-primary py-3.5 rounded-xl text-sm font-bold shadow-glow hover:shadow-glow-lg"
                 >
                   Proceed to Checkout

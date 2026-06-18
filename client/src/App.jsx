@@ -20,6 +20,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Wishlist from './pages/Wishlist';
+import Checkout from './pages/Checkout';
+import Orders from './pages/Orders';
+import OrderDetails from './pages/OrderDetails';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -50,6 +53,30 @@ export default function App() {
                       element={
                         <ProtectedRoute>
                           <Profile />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/checkout"
+                      element={
+                        <ProtectedRoute>
+                          <Checkout />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/orders"
+                      element={
+                        <ProtectedRoute>
+                          <Orders />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/orders/:id"
+                      element={
+                        <ProtectedRoute>
+                          <OrderDetails />
                         </ProtectedRoute>
                       }
                     />
