@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, CreditCard, ShieldCheck, CheckCircle2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, MapPin, CreditCard, ShieldCheck, CheckCircle2, AlertTriangle, RefreshCw, Printer } from 'lucide-react';
 import orderService from '../services/orderService';
 import { formatCurrency, formatDate } from '../utils/format';
 import Spinner from '../components/common/Spinner';
@@ -121,6 +121,39 @@ export default function OrderDetails() {
 
   return (
     <div className="container-custom py-10">
+      <style>{`
+        @media print {
+          header, footer, nav, button, a, .fixed, .badge-primary:first-of-type {
+            display: none !important;
+          }
+          body {
+            background: white !important;
+            color: #0f172a !important;
+          }
+          .container-custom {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .card, .glass-card {
+            box-shadow: none !important;
+            border: 1px solid #e2e8f0 !important;
+            background: transparent !important;
+            padding: 15px !important;
+          }
+          .grid {
+            display: block !important;
+          }
+          .lg\\:col-span-8, .lg\\:col-span-4 {
+            width: 100% !important;
+            margin-bottom: 20px !important;
+          }
+          .card {
+            page-break-inside: avoid !important;
+          }
+        }
+      `}</style>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6 mb-8">
         <div>
@@ -135,9 +168,14 @@ export default function OrderDetails() {
           </p>
         </div>
         
-        {/* Status indicator */}
-        <div className="flex items-center gap-2.5 self-start sm:self-center">
-          <span className="text-xs font-bold text-surface-400 uppercase tracking-wider">Status:</span>
+        {/* Actions & Status */}
+        <div className="flex items-center gap-3 self-start sm:self-center">
+          <button
+            onClick={() => window.print()}
+            className="btn-secondary text-xs font-bold flex items-center gap-1.5 px-3.5 py-2 rounded-xl"
+          >
+            <Printer className="h-3.5 w-3.5" /> Print Invoice
+          </button>
           <span className="badge-primary px-3 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wide">
             {order.status}
           </span>

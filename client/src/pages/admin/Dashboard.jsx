@@ -10,6 +10,8 @@ import {
   TrendingUp,
   Clock,
   Sparkles,
+  Download,
+  Printer,
 } from 'lucide-react';
 import orderService from '../../services/orderService';
 import Spinner from '../../components/common/Spinner';
@@ -73,6 +75,47 @@ export default function Dashboard() {
     recentOrders = [],
   } = stats || {};
 
+  // CSV Sales Report Export
+  const exportCSVReport = () => {
+    if (!stats) return;
+
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += 'ShopSphere Admin Sales Report\n';
+    csvContent += `Generated At,${new Date().toLocaleString()}\n\n`;
+
+    csvContent += 'FINANCIAL METRICS\n';
+    csvContent += `Total Revenue,INR ${totalSales.toFixed(2)}\n`;
+    csvContent += `Total Orders,${totalOrders}\n`;
+    csvContent += `Pending Orders,${pendingOrders}\n`;
+    csvContent += `Processing Orders,${processingOrders}\n`;
+    csvContent += `Shipped Orders,${shippedOrders}\n`;
+    csvContent += `Delivered Orders,${deliveredOrders}\n`;
+    csvContent += `Cancelled Orders,${cancelledOrders}\n`;
+    csvContent += `Total Products,${totalProducts}\n`;
+    csvContent += `Stock Warnings (Out of Stock),${outOfStockProducts}\n\n`;
+
+    csvContent += 'REVENUE BY CATEGORY\n';
+    csvContent += 'Category,Revenue (INR),Quantity Sold\n';
+    categorySales.forEach((cat) => {
+      csvContent += `"${cat._id}",${cat.sales.toFixed(2)},${cat.quantity}\n`;
+    });
+    csvContent += '\n';
+
+    csvContent += 'RECENT ORDERS ACTIVITY\n';
+    csvContent += 'Order ID,Customer,Date,Total (INR),Status\n';
+    recentOrders.forEach((o) => {
+      csvContent += `"${o._id}","${o.user?.name || 'Guest'}",${new Date(o.createdAt).toLocaleDateString()},${o.totalPrice.toFixed(2)},${o.status}\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `shopsphere_sales_report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Find percentage for categories
   const maxCategorySales = categorySales.length > 0 ? Math.max(...categorySales.map(c => c.sales)) : 1;
 
@@ -111,6 +154,32 @@ export default function Dashboard() {
 
   return (
     <div className="container-custom py-10 space-y-10">
+      <style>{`
+        @media print {
+          header, footer, nav, button, a[href="/admin/products"], a[href="/admin/chats"], a[href="/admin/orders"], .btn-primary, .btn-secondary {
+            display: none !important;
+          }
+          body {
+            background: white !important;
+            color: #0f172a !important;
+          }
+          .container-custom {
+            max-width: 100% !important;
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          .grid {
+            display: grid !important;
+            grid-template-cols: repeat(2, 1fr) !important;
+            gap: 15px !important;
+          }
+          .bg-white {
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+          }
+        }
+      `}</style>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
@@ -121,16 +190,28 @@ export default function Dashboard() {
             Real-time analytics and management controls for ShopSphere.
           </p>
         </div>
-        <div className="flex gap-3">
-          <Link to="/admin/products" className="btn-secondary text-sm py-2.5 px-4 font-semibold">
+        <div className="flex flex-wrap gap-3">
+          <Link to="/admin/products" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
             Manage Products
           </Link>
-          <Link to="/admin/chats" className="btn-secondary text-sm py-2.5 px-4 font-semibold">
+          <Link to="/admin/chats" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
             Support Chats
           </Link>
-          <Link to="/admin/orders" className="btn-primary text-sm py-2.5 px-4 font-semibold">
+          <Link to="/admin/orders" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
             Manage Orders
           </Link>
+          <button
+            onClick={exportCSVReport}
+            className="btn-primary text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center gap-1.5"
+          >
+            <Download className="h-4 w-4" /> Export CSV
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="btn-primary text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center gap-1.5"
+          >
+            <Printer className="h-4 w-4" /> Print PDF
+          </button>
         </div>
       </div>
 

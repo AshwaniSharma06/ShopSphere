@@ -113,6 +113,25 @@ const handleStripeWebhook = async (req, res, next) => {
           };
           await order.save();
           console.log(`✅ Order ${orderId} successfully marked as PAID via Stripe Webhook.`);
+
+          // Send payment confirmation email asynchronously
+          const populatedOrder = await Order.findById(order._id)
+            .populate('user', 'name email')
+            .populate('orderItems.product', 'title price');
+
+          if (populatedOrder && populatedOrder.user?.email) {
+            try {
+              const sendEmail = require('../utils/sendEmail');
+              const { getPaymentReceiptTemplate } = require('../utils/emailTemplates');
+              await sendEmail({
+                email: populatedOrder.user.email,
+                subject: `Payment Confirmation: ShopSphere Order #${populatedOrder._id.toString().toUpperCase()} Settled`,
+                html: getPaymentReceiptTemplate(populatedOrder),
+              });
+            } catch (emailErr) {
+              console.error('⚠️ Failed to send Stripe webhook payment confirmation email:', emailErr.message);
+            }
+          }
         } else {
           console.warn(`⚠️ Webhook order not found in DB: ${orderId}`);
         }

@@ -17,6 +17,7 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const chatRoutes = require('./routes/chatRoutes');
+const { startCronJobs } = require('./utils/cronScheduler');
 
 // Load environment variables
 dotenv.config();
@@ -106,6 +107,7 @@ const startServer = async () => {
 
   const server = http.createServer(app);
   setupSocket(server);
+  startCronJobs();
 
   server.listen(PORT, () => {
     console.log(

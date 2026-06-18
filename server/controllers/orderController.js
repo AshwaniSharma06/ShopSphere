@@ -1,6 +1,8 @@
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
+const sendEmail = require('../utils/sendEmail');
+const { getOrderReceiptTemplate, getPaymentReceiptTemplate } = require('../utils/emailTemplates');
 
 /**
  * @desc    Create a new order
@@ -67,6 +69,23 @@ const createOrder = async (req, res, next) => {
     if (user) {
       user.cart = [];
       await user.save();
+    }
+
+    // 5. Send order confirmation email (receipt) asynchronously
+    const populatedOrder = await Order.findById(createdOrder._id)
+      .populate('user', 'name email')
+      .populate('orderItems.product', 'title price');
+
+    if (populatedOrder && populatedOrder.user?.email) {
+      try {
+        await sendEmail({
+          email: populatedOrder.user.email,
+          subject: `Invoice Receipt for ShopSphere Order #${populatedOrder._id.toString().toUpperCase()}`,
+          html: getOrderReceiptTemplate(populatedOrder),
+        });
+      } catch (emailErr) {
+        console.error('⚠️ Failed to send order confirmation email:', emailErr.message);
+      }
     }
 
     res.status(201).json({
@@ -146,6 +165,23 @@ const updateOrderToPaid = async (req, res, next) => {
     };
 
     const updatedOrder = await order.save();
+
+    // Send payment confirmation receipt asynchronously
+    const populatedOrder = await Order.findById(updatedOrder._id)
+      .populate('user', 'name email')
+      .populate('orderItems.product', 'title price');
+
+    if (populatedOrder && populatedOrder.user?.email) {
+      try {
+        await sendEmail({
+          email: populatedOrder.user.email,
+          subject: `Payment Confirmation: ShopSphere Order #${populatedOrder._id.toString().toUpperCase()} Settled`,
+          html: getPaymentReceiptTemplate(populatedOrder),
+        });
+      } catch (emailErr) {
+        console.error('⚠️ Failed to send payment confirmation email:', emailErr.message);
+      }
+    }
 
     res.status(200).json({
       success: true,
