@@ -242,6 +242,100 @@ const resetPassword = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Register as a Vendor
+ * @route   POST /api/v1/auth/vendor-register
+ * @access  Private
+ */
+const registerVendor = async (req, res, next) => {
+  try {
+    const { storeName, storeDescription, phone, logo } = req.body;
+
+    if (!storeName || !phone) {
+      res.status(400);
+      throw new Error('Please provide store name and phone contact');
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
+    }
+
+    user.role = 'vendor';
+    user.vendorProfile = {
+      storeName,
+      storeDescription,
+      phone,
+      logo: logo || '',
+      isApproved: false, // requires admin approval
+      commissionRate: 0.10, // 10% standard platform commission split
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Vendor application submitted. Awaiting administrator approval.',
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Approve or reject vendor application (Admin only)
+ * @route   PUT /api/v1/auth/vendor-approve/:id
+ * @access  Private/Admin
+ */
+const approveVendor = async (req, res, next) => {
+  try {
+    const { isApproved } = req.body;
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
+    }
+
+    if (user.role !== 'vendor') {
+      res.status(400);
+      throw new Error('User is not a vendor');
+    }
+
+    user.vendorProfile.isApproved = isApproved;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Vendor application ${isApproved ? 'approved' : 'suspended'}.`,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get all vendors (Admin only)
+ * @route   GET /api/v1/auth/vendors
+ * @access  Private/Admin
+ */
+const getVendors = async (req, res, next) => {
+  try {
+    const vendors = await User.find({ role: 'vendor' });
+
+    res.status(200).json({
+      success: true,
+      count: vendors.length,
+      vendors,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -249,4 +343,7 @@ module.exports = {
   updateProfile,
   forgotPassword,
   resetPassword,
+  registerVendor,
+  approveVendor,
+  getVendors,
 };

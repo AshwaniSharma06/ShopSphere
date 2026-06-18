@@ -7,8 +7,11 @@ const {
   updateProfile,
   forgotPassword,
   resetPassword,
+  registerVendor,
+  approveVendor,
+  getVendors,
 } = require('../controllers/authController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Public routes
 router.post('/register', register);
@@ -18,5 +21,10 @@ router.put('/reset-password/:token', resetPassword);
 
 // Protected routes
 router.route('/profile').get(protect, getProfile).put(protect, updateProfile);
+
+// Vendor endpoints
+router.post('/vendor-register', protect, registerVendor);
+router.put('/vendor-approve/:id', protect, authorize('admin'), approveVendor);
+router.get('/vendors', protect, authorize('admin'), getVendors);
 
 module.exports = router;

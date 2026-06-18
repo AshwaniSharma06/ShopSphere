@@ -25,8 +25,16 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['customer', 'admin'],
+      enum: ['customer', 'vendor', 'admin'],
       default: 'customer',
+    },
+    vendorProfile: {
+      storeName: { type: String, default: '' },
+      storeDescription: { type: String, default: '' },
+      phone: { type: String, default: '' },
+      logo: { type: String, default: '' },
+      isApproved: { type: Boolean, default: false },
+      commissionRate: { type: Number, default: 0.10 },
     },
     avatar: {
       type: String,

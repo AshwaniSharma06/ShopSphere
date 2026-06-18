@@ -14,6 +14,7 @@ import {
   Package,
   LayoutDashboard,
   ChevronDown,
+  Store,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -188,6 +189,32 @@ export default function Navbar() {
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-primary-600 dark:text-primary-400 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
                       >
                         <LayoutDashboard className="h-4 w-4" /> Admin Dashboard
+                      </Link>
+                    )}
+
+                    {user?.role === 'customer' && (
+                      <Link
+                        to="/vendor/register"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                      >
+                        <Store className="h-4 w-4 text-surface-450" /> Become a Seller
+                      </Link>
+                    )}
+
+                    {user?.role === 'vendor' && !user?.vendorProfile?.isApproved && (
+                      <div className="flex items-center gap-3 px-4 py-2.5 text-sm text-amber-600 dark:text-amber-400 cursor-not-allowed select-none bg-amber-500/5 font-semibold">
+                        <Store className="h-4 w-4 animate-pulse" /> Pending Approval
+                      </div>
+                    )}
+
+                    {user?.role === 'vendor' && user?.vendorProfile?.isApproved && (
+                      <Link
+                        to="/vendor/dashboard"
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-primary-600 dark:text-primary-400 hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+                      >
+                        <Store className="h-4 w-4" /> Seller Portal
                       </Link>
                     )}
 

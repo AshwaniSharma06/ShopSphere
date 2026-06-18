@@ -38,6 +38,9 @@ const getProducts = async (req, res, next) => {
     // Category filter
     if (category) query.category = category;
 
+    // Vendor filter
+    if (req.query.vendor) query.vendor = req.query.vendor;
+
     // Price range filter
     if (minPrice || maxPrice) {
       query.price = {};
@@ -157,7 +160,12 @@ const getTrendingProducts = async (req, res, next) => {
  */
 const createProduct = async (req, res, next) => {
   try {
-    const product = await Product.create(req.body);
+    const productData = { ...req.body };
+    if (req.user && req.user.role === 'vendor') {
+      productData.vendor = req.user._id;
+    }
+
+    const product = await Product.create(productData);
 
     // Generate QR code for the product
     const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -181,6 +189,12 @@ const updateProduct = async (req, res, next) => {
     if (!product) {
       res.status(404);
       throw new Error('Product not found');
+    }
+
+    // Authorization check: Admin can edit any product. Vendor can only edit their own.
+    if (req.user.role === 'vendor' && (!product.vendor || product.vendor.toString() !== req.user._id.toString())) {
+      res.status(403);
+      throw new Error('Not authorized to edit this product');
     }
 
     const allowedFields = [
@@ -212,6 +226,12 @@ const deleteProduct = async (req, res, next) => {
     if (!product) {
       res.status(404);
       throw new Error('Product not found');
+    }
+
+    // Authorization check: Admin can delete any. Vendor can only delete their own.
+    if (req.user.role === 'vendor' && (!product.vendor || product.vendor.toString() !== req.user._id.toString())) {
+      res.status(403);
+      throw new Error('Not authorized to delete this product');
     }
 
     await Product.findByIdAndDelete(req.params.id);
@@ -424,6 +444,74 @@ const getPersonalizedRecommendations = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get Vendor Stats
+ * @route   GET /api/v1/products/vendor/stats
+ * @access  Private (Vendor only)
+ */
+const getVendorStats = async (req, res, next) => {
+  try {
+    const vendorId = req.user._id;
+
+    // 1. Get vendor's products
+    const products = await Product.find({ vendor: vendorId });
+    const productIds = products.map((p) => p._id);
+
+    // Find out of stock count
+    const outOfStockCount = products.filter((p) => p.stock === 0).length;
+
+    // 2. Aggregate sales metrics for paid orders containing these products
+    const orders = await Order.find({ isPaid: true });
+
+    let totalSales = 0;
+    let totalItemsSold = 0;
+    const itemsList = [];
+
+    orders.forEach((order) => {
+      order.orderItems.forEach((item) => {
+        if (productIds.some((id) => id.toString() === item.product.toString())) {
+          const itemSales = item.price * item.quantity;
+          totalSales += itemSales;
+          totalItemsSold += item.quantity;
+
+          // Add to breakdown
+          const matchingProduct = products.find(
+            (p) => p._id.toString() === item.product.toString()
+          );
+          itemsList.push({
+            title: matchingProduct ? matchingProduct.title : 'Deleted Product',
+            price: item.price,
+            quantity: item.quantity,
+            total: itemSales,
+            createdAt: order.createdAt,
+          });
+        }
+      });
+    });
+
+    const commissionRate = req.user.vendorProfile?.commissionRate || 0.10;
+    const commissionPaid = totalSales * commissionRate;
+    const netEarnings = totalSales - commissionPaid;
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalSales,
+        totalItemsSold,
+        commissionPaid,
+        netEarnings,
+        totalProducts: products.length,
+        outOfStockProducts: outOfStockCount,
+        recentSales: itemsList
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 5),
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
@@ -435,4 +523,5 @@ module.exports = {
   createProductReview,
   getProductRecommendations,
   getPersonalizedRecommendations,
+  getVendorStats,
 };

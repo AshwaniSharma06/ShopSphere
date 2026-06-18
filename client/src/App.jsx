@@ -15,6 +15,7 @@ import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminRoute from './components/layout/AdminRoute';
+import VendorRoute from './components/layout/VendorRoute';
 
 // Pages
 import Home from './pages/Home';
@@ -37,6 +38,11 @@ import Products from './pages/admin/Products';
 import AdminOrders from './pages/admin/Orders';
 import AdminChats from './pages/admin/Chats';
 import ChatWidget from './components/chat/ChatWidget';
+
+// Vendor Pages
+import VendorRegister from './pages/vendor/Register';
+import VendorDashboard from './pages/vendor/Dashboard';
+import VendorProducts from './pages/vendor/Products';
 
 export default function App() {
   return (
@@ -92,6 +98,32 @@ export default function App() {
                         <ProtectedRoute>
                           <OrderDetails />
                         </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Vendor Routes */}
+                    <Route
+                      path="/vendor/register"
+                      element={
+                        <ProtectedRoute>
+                          <VendorRegister />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/vendor/dashboard"
+                      element={
+                        <VendorRoute>
+                          <VendorDashboard />
+                        </VendorRoute>
+                      }
+                    />
+                    <Route
+                      path="/vendor/products"
+                      element={
+                        <VendorRoute>
+                          <VendorProducts />
+                        </VendorRoute>
                       }
                     />
 

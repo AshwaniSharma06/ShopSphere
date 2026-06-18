@@ -11,6 +11,7 @@ const {
   createProductReview,
   getProductRecommendations,
   getPersonalizedRecommendations,
+  getVendorStats,
 } = require('../controllers/productController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -18,15 +19,16 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 router.get('/featured', getFeaturedProducts);
 router.get('/trending', getTrendingProducts);
 router.get('/recommendations', getPersonalizedRecommendations);
+router.get('/vendor/stats', protect, authorize('vendor'), getVendorStats);
 
 router.route('/')
   .get(getProducts)
-  .post(protect, authorize('admin'), createProduct);
+  .post(protect, authorize('admin', 'vendor'), createProduct);
 
 router.route('/:id')
   .get(getProductById)
-  .put(protect, authorize('admin'), updateProduct)
-  .delete(protect, authorize('admin'), deleteProduct);
+  .put(protect, authorize('admin', 'vendor'), updateProduct)
+  .delete(protect, authorize('admin', 'vendor'), deleteProduct);
 
 router.post('/:id/reviews', protect, createProductReview);
 router.get('/:id/recommendations', getProductRecommendations);
