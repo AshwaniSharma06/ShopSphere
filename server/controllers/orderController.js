@@ -224,6 +224,134 @@ const updateOrderToDelivered = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get dashboard stats (Admin only)
+ * @route   GET /api/v1/orders/dashboard/stats
+ * @access  Private/Admin
+ */
+const getDashboardStats = async (req, res, next) => {
+  try {
+    // 1. Total sales (sum of totalPrice of paid orders)
+    const salesData = await Order.aggregate([
+      { $match: { isPaid: true } },
+      { $group: { _id: null, totalSales: { $sum: '$totalPrice' } } }
+    ]);
+    const totalSales = salesData.length > 0 ? salesData[0].totalSales : 0;
+
+    // 2. Orders count
+    const totalOrders = await Order.countDocuments({});
+    const pendingOrders = await Order.countDocuments({ status: 'Pending' });
+    const processingOrders = await Order.countDocuments({ status: 'Processing' });
+    const shippedOrders = await Order.countDocuments({ status: 'Shipped' });
+    const deliveredOrders = await Order.countDocuments({ status: 'Delivered' });
+    const cancelledOrders = await Order.countDocuments({ status: 'Cancelled' });
+
+    // 3. Products count
+    const totalProducts = await Product.countDocuments({});
+    const outOfStockProducts = await Product.countDocuments({ stock: 0 });
+
+    // 4. Sales by category (for visual charts/progress bars)
+    const categorySales = await Order.aggregate([
+      { $match: { isPaid: true } },
+      { $unwind: '$orderItems' },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'orderItems.product',
+          foreignField: '_id',
+          as: 'productInfo'
+        }
+      },
+      { $unwind: '$productInfo' },
+      {
+        $lookup: {
+          from: 'categories',
+          localField: 'productInfo.category',
+          foreignField: '_id',
+          as: 'categoryInfo'
+        }
+      },
+      { $unwind: '$categoryInfo' },
+      {
+        $group: {
+          _id: '$categoryInfo.name',
+          sales: { $sum: { $multiply: ['$orderItems.price', '$orderItems.quantity'] } },
+          quantity: { $sum: '$orderItems.quantity' }
+        }
+      },
+      { $sort: { sales: -1 } }
+    ]);
+
+    // 5. Recent orders
+    const recentOrders = await Order.find({})
+      .populate('user', 'name')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalSales,
+        totalOrders,
+        pendingOrders,
+        processingOrders,
+        shippedOrders,
+        deliveredOrders,
+        cancelledOrders,
+        totalProducts,
+        outOfStockProducts,
+        categorySales,
+        recentOrders
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Update order status (Admin only)
+ * @route   PUT /api/v1/orders/:id/status
+ * @access  Private/Admin
+ */
+const updateOrderStatus = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      res.status(404);
+      throw new Error('Order not found');
+    }
+
+    const validStatuses = ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'];
+    if (!validStatuses.includes(status)) {
+      res.status(400);
+      throw new Error('Invalid status provided');
+    }
+
+    order.status = status;
+    if (status === 'Delivered') {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+    }
+    if (status === 'Processing' && !order.isPaid) {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+    }
+
+    const updatedOrder = await order.save();
+
+    res.status(200).json({
+      success: true,
+      order: updatedOrder,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createOrder,
   getOrderById,
@@ -231,4 +359,6 @@ module.exports = {
   getMyOrders,
   getOrders,
   updateOrderToDelivered,
+  getDashboardStats,
+  updateOrderStatus,
 };

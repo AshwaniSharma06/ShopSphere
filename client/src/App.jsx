@@ -25,6 +25,11 @@ import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';
 import NotFound from './pages/NotFound';
 
+// Admin Pages
+import Dashboard from './pages/admin/Dashboard';
+import Products from './pages/admin/Products';
+import AdminOrders from './pages/admin/Orders';
+
 export default function App() {
   return (
     <ThemeProvider>
@@ -78,6 +83,32 @@ export default function App() {
                         <ProtectedRoute>
                           <OrderDetails />
                         </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Admin Routes */}
+                    <Route
+                      path="/admin/dashboard"
+                      element={
+                        <AdminRoute>
+                          <Dashboard />
+                        </AdminRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/products"
+                      element={
+                        <AdminRoute>
+                          <Products />
+                        </AdminRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/orders"
+                      element={
+                        <AdminRoute>
+                          <AdminOrders />
+                        </AdminRoute>
                       }
                     />
 
