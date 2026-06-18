@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Star, Heart, ShoppingCart, Eye } from 'lucide-react';
 import { formatCurrency, calcDiscountedPrice } from '../../utils/format';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 export default function ProductCard({ product }) {
   const {
@@ -18,6 +20,10 @@ export default function ProductCard({ product }) {
     stock,
   } = product;
 
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const inWishlist = isInWishlist(_id);
+
   const discountedPrice = calcDiscountedPrice(price, discountPercent);
   const mainImage = images && images.length > 0
     ? images[0]
@@ -26,15 +32,17 @@ export default function ProductCard({ product }) {
   const handleAddToWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Stub functionality to be replaced in Phase 3 with context
-    alert(`"${title}" added to wishlist!`);
+    toggleWishlist(product);
   };
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    // Stub functionality to be replaced in Phase 3 with context
-    alert(`"${title}" added to cart!`);
+    try {
+      await addToCart(product, 1);
+    } catch (err) {
+      alert(err.message || 'Failed to add item to cart');
+    }
   };
 
   return (
@@ -83,9 +91,9 @@ export default function ProductCard({ product }) {
           <button
             onClick={handleAddToWishlist}
             className="p-3 bg-white hover:bg-primary-50 dark:bg-surface-900 dark:hover:bg-surface-850 text-surface-700 hover:text-primary-600 dark:text-surface-300 dark:hover:text-primary-400 rounded-full shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
-            title="Add to Wishlist"
+            title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
           >
-            <Heart className="h-4.5 w-4.5" />
+            <Heart className={`h-4.5 w-4.5 ${inWishlist ? 'fill-red-500 text-red-500' : ''}`} />
           </button>
           <Link
             to={`/product/${_id}`}

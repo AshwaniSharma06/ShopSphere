@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import productService from '../services/productService';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { formatCurrency, calcDiscountedPrice, formatDate } from '../utils/format';
 import Spinner from '../components/common/Spinner';
 
@@ -23,6 +25,10 @@ export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  
+  const inWishlist = product ? isInWishlist(product._id) : false;
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -87,16 +93,18 @@ export default function ProductDetails() {
 
   // Add to Wishlist
   const handleAddToWishlist = () => {
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    alert(`"${product.title}" added to wishlist!`);
+    if (!product) return;
+    toggleWishlist(product);
   };
 
   // Add to Cart
-  const handleAddToCart = () => {
-    alert(`"${product.title}" (${quantity} item(s)) added to cart!`);
+  const handleAddToCart = async () => {
+    if (!product) return;
+    try {
+      await addToCart(product, quantity);
+    } catch (err) {
+      alert(err.message || 'Failed to add item to cart');
+    }
   };
 
   // Download QR Code
@@ -405,9 +413,14 @@ export default function ProductDetails() {
               </button>
               <button
                 onClick={handleAddToWishlist}
-                className="btn-secondary gap-2 px-6 py-3.5 rounded-xl"
+                className={`btn-secondary gap-2 px-6 py-3.5 rounded-xl transition-all ${
+                  inWishlist 
+                    ? 'border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 text-red-650 dark:text-red-400' 
+                    : ''
+                }`}
               >
-                <Heart className="h-5 w-5 text-red-500" /> Wishlist
+                <Heart className={`h-5 w-5 ${inWishlist ? 'fill-red-500 text-red-500' : 'text-surface-450 dark:text-surface-400'}`} />
+                {inWishlist ? 'Wishlisted' : 'Wishlist'}
               </button>
             </div>
           </div>

@@ -17,10 +17,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const { darkMode, toggleTheme } = useTheme();
+  const { cartCount } = useCart();
+  const { wishlist } = useWishlist();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -104,15 +108,18 @@ export default function Navbar() {
           </button>
 
           {/* Wishlist */}
-          {isAuthenticated && (
-            <Link
-              to="/wishlist"
-              className="p-2.5 rounded-xl text-surface-500 hover:text-primary-600 dark:text-surface-400 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all"
-              aria-label="Wishlist"
-            >
-              <Heart className="h-[18px] w-[18px]" />
-            </Link>
-          )}
+          <Link
+            to="/wishlist"
+            className="relative p-2.5 rounded-xl text-surface-500 hover:text-primary-600 dark:text-surface-400 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-all"
+            aria-label="Wishlist"
+          >
+            <Heart className="h-[18px] w-[18px]" />
+            {wishlist.length > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-red-500 text-[9px] font-bold text-white flex items-center justify-center animate-scale-in">
+                {wishlist.length}
+              </span>
+            )}
+          </Link>
 
           {/* Cart */}
           <Link
@@ -121,7 +128,11 @@ export default function Navbar() {
             aria-label="Cart"
           >
             <ShoppingCart className="h-[18px] w-[18px]" />
-            {/* Cart badge (placeholder — will be dynamic in Phase 3) */}
+            {cartCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 min-w-[16px] px-1 rounded-full bg-primary-600 text-[9px] font-bold text-white flex items-center justify-center animate-scale-in">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
           {/* Auth Section */}
