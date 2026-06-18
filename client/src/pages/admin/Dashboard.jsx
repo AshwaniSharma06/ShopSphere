@@ -125,6 +125,9 @@ export default function Dashboard() {
           <Link to="/admin/products" className="btn-secondary text-sm py-2.5 px-4 font-semibold">
             Manage Products
           </Link>
+          <Link to="/admin/chats" className="btn-secondary text-sm py-2.5 px-4 font-semibold">
+            Support Chats
+          </Link>
           <Link to="/admin/orders" className="btn-primary text-sm py-2.5 px-4 font-semibold">
             Manage Orders
           </Link>

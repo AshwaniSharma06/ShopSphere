@@ -3,8 +3,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
+const http = require('http');
 const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
+const setupSocket = require('./socket');
 
 // Route imports
 const authRoutes = require('./routes/authRoutes');
@@ -14,6 +16,7 @@ const cartRoutes = require('./routes/cartRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 // Load environment variables
 dotenv.config();
@@ -78,6 +81,7 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/chats', chatRoutes);
 
 // --------------- Error Handling ---------------
 
@@ -100,7 +104,10 @@ const startServer = async () => {
     );
   }
 
-  app.listen(PORT, () => {
+  const server = http.createServer(app);
+  setupSocket(server);
+
+  server.listen(PORT, () => {
     console.log(
       `🚀 ShopSphere server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`
     );

@@ -35,6 +35,8 @@ import NotFound from './pages/NotFound';
 import Dashboard from './pages/admin/Dashboard';
 import Products from './pages/admin/Products';
 import AdminOrders from './pages/admin/Orders';
+import AdminChats from './pages/admin/Chats';
+import ChatWidget from './components/chat/ChatWidget';
 
 export default function App() {
   return (
@@ -118,6 +120,14 @@ export default function App() {
                         </AdminRoute>
                       }
                     />
+                    <Route
+                      path="/admin/chats"
+                      element={
+                        <AdminRoute>
+                          <AdminChats />
+                        </AdminRoute>
+                      }
+                    />
 
                     {/* Catch-all 404 */}
                     <Route path="*" element={<NotFound />} />
@@ -125,6 +135,7 @@ export default function App() {
                 </main>
 
                 <Footer />
+                <ChatWidget />
               </div>
               </Router>
             </Elements>
