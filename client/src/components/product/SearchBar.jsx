@@ -29,7 +29,7 @@ export default function SearchBar({ value, onChange, onClear, onVoiceClick }) {
           className="p-2 rounded-xl text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 transition-colors"
           type="button"
           aria-label="Voice search"
-          title="Voice Search (Coming Soon)"
+          title="Voice Search"
         >
           <Mic className="h-4.5 w-4.5" />
         </button>

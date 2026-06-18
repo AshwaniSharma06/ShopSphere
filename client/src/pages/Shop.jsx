@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight, X, Mic, AlertCircle } from 'lucide-react';
 import productService from '../services/productService';
 import categoryService from '../services/categoryService';
 import SearchBar from '../components/product/SearchBar';
@@ -33,6 +33,61 @@ export default function Shop() {
 
   // Mobile Filter Drawer Toggle State
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  const [isListening, setIsListening] = useState(false);
+  const [voiceError, setVoiceError] = useState(null);
+  const [speechRecognition, setSpeechRecognition] = useState(null);
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const rec = new SpeechRecognition();
+      rec.continuous = false;
+      rec.interimResults = false;
+      rec.lang = 'en-US';
+
+      rec.onstart = () => {
+        setIsListening(true);
+        setVoiceError(null);
+      };
+
+      rec.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          updateQueryParam('search', transcript);
+        }
+      };
+
+      rec.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        if (event.error === 'not-allowed') {
+          setVoiceError('Microphone permission is blocked. Please enable it in browser settings.');
+        } else if (event.error === 'no-speech') {
+          setVoiceError('No speech was detected. Please try again.');
+        } else {
+          setVoiceError(`Voice search error: ${event.error}`);
+        }
+      };
+
+      rec.onend = () => {
+        setIsListening(false);
+      };
+
+      setSpeechRecognition(rec);
+    }
+  }, []);
+
+  const handleVoiceSearch = () => {
+    if (!speechRecognition) {
+      alert('Speech Recognition is not supported by your current browser. Please try Chrome, Edge, or Safari.');
+      return;
+    }
+    try {
+      speechRecognition.start();
+    } catch (err) {
+      console.error('Failed to start speech recognition:', err);
+    }
+  };
 
   // Fetch Categories
   useEffect(() => {
@@ -137,7 +192,7 @@ export default function Shop() {
             value={searchVal}
             onChange={(val) => updateQueryParam('search', val)}
             onClear={() => updateQueryParam('search', '')}
-            onVoiceClick={() => alert('Voice search will be configured in Phase 7.')}
+            onVoiceClick={handleVoiceSearch}
           />
         </div>
 
@@ -289,6 +344,118 @@ export default function Shop() {
               />
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Voice Search Listening Overlay */}
+      <AnimatePresence>
+        {(isListening || voiceError) && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                if (speechRecognition) speechRecognition.stop();
+                setVoiceError(null);
+              }}
+              className="absolute inset-0 bg-surface-950/70 backdrop-blur-md"
+            />
+
+            {/* Overlay Box */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-md bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-3xl p-8 text-center shadow-xl m-4 z-10 space-y-6"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  if (speechRecognition) speechRecognition.stop();
+                  setVoiceError(null);
+                }}
+                className="absolute top-4 right-4 p-2 rounded-xl text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              {voiceError ? (
+                // Error State
+                <div className="space-y-6">
+                  <div className="h-16 w-16 mx-auto rounded-full bg-red-100 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400">
+                    <AlertCircle className="h-8 w-8" />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold text-surface-900 dark:text-white">Voice Search Failed</h3>
+                    <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
+                      {voiceError}
+                    </p>
+                  </div>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => setVoiceError(null)}
+                      className="btn-secondary text-sm px-6 py-2.5 font-semibold"
+                    >
+                      Close
+                    </button>
+                    <button
+                      onClick={() => {
+                        setVoiceError(null);
+                        handleVoiceSearch();
+                      }}
+                      className="btn-primary text-sm px-6 py-2.5 font-semibold"
+                    >
+                      Try Again
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                // Listening State
+                <div className="space-y-6">
+                  {/* Pulsing Visualizer */}
+                  <div className="relative h-24 w-24 mx-auto flex items-center justify-center">
+                    <motion.div
+                      animate={{ scale: [1, 1.4, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                      className="absolute inset-0 rounded-full bg-primary-500/20 dark:bg-primary-500/10"
+                    />
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
+                      className="absolute inset-2 rounded-full bg-primary-500/30 dark:bg-primary-500/20"
+                    />
+                    <div className="relative h-16 w-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/20">
+                      <Mic className="h-7 w-7 animate-pulse-soft" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-extrabold text-surface-900 dark:text-white tracking-tight">Listening for Search...</h3>
+                    <p className="text-sm text-surface-500 dark:text-surface-400">
+                      Please speak clearly into your microphone
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-surface-50 dark:bg-surface-850 rounded-2xl border border-surface-100 dark:border-surface-800 text-xs text-surface-450 space-y-2">
+                    <p className="font-bold text-surface-500 dark:text-surface-450 uppercase tracking-wider">Example Queries</p>
+                    <p>"headphones" • "smart watch" • "denim jacket"</p>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      if (speechRecognition) speechRecognition.stop();
+                    }}
+                    className="btn-secondary text-sm px-6 py-2.5 font-semibold w-full"
+                  >
+                    Cancel Listening
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
