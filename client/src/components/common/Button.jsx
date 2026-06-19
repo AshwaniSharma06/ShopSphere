@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 const variants = {
   primary: 'btn-primary',
   secondary: 'btn-secondary',
+  accent: 'btn-accent',
   ghost: 'btn-ghost',
   danger: 'btn-danger',
 };
@@ -30,7 +31,7 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`${variants[variant]} ${sizes[size]} ${className}`}
+      className={`${variants[variant] || variants.primary} ${sizes[size]} ${className}`}
       {...props}
     >
       {loading ? (

@@ -2,19 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  DollarSign,
-  ShoppingBag,
-  Package,
-  AlertTriangle,
-  ArrowRight,
-  TrendingUp,
-  Clock,
-  Sparkles,
-  Download,
-  Printer,
-  CheckCircle,
-  XCircle,
-  Store,
+  DollarSign, ShoppingBag, Package, AlertTriangle, ArrowRight,
+  TrendingUp, Clock, Sparkles, Download, Printer, CheckCircle,
+  XCircle, Store, BarChart3, Users,
 } from 'lucide-react';
 import orderService from '../../services/orderService';
 import api from '../../services/api';
@@ -26,7 +16,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
-
   const [vendors, setVendors] = useState([]);
   const [vendorsLoading, setVendorsLoading] = useState(false);
   const [vendorsError, setVendorsError] = useState(null);
@@ -35,9 +24,7 @@ export default function Dashboard() {
     try {
       setVendorsLoading(true);
       const { data } = await api.get('/auth/vendors');
-      if (data.success) {
-        setVendors(data.vendors);
-      }
+      if (data.success) setVendors(data.vendors);
     } catch (err) {
       console.error('Error fetching vendors:', err);
       setVendorsError(err.response?.data?.message || 'Failed to load vendors');
@@ -46,29 +33,15 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === 'sellers') {
-      fetchVendors();
-    }
-  }, [activeTab]);
+  useEffect(() => { if (activeTab === 'sellers') fetchVendors(); }, [activeTab]);
 
   const handleApproveVendor = async (id, approve) => {
     try {
       const { data } = await api.put(`/auth/vendor-approve/${id}`, { isApproved: approve });
       if (data.success) {
-        setVendors((prev) =>
-          prev.map((vendor) =>
-            vendor._id === id
-              ? {
-                  ...vendor,
-                  vendorProfile: {
-                    ...vendor.vendorProfile,
-                    isApproved: approve,
-                  },
-                }
-              : vendor
-          )
-        );
+        setVendors((prev) => prev.map((v) => v._id === id
+          ? { ...v, vendorProfile: { ...v.vendorProfile, isApproved: approve } } : v
+        ));
       }
     } catch (err) {
       console.error('Error toggling vendor approval:', err);
@@ -81,19 +54,14 @@ export default function Dashboard() {
       try {
         setLoading(true);
         const data = await orderService.getDashboardStats();
-        if (data.success) {
-          setStats(data.stats);
-        } else {
-          setError('Failed to load dashboard statistics');
-        }
+        if (data.success) setStats(data.stats);
+        else setError('Failed to load dashboard statistics');
       } catch (err) {
-        console.error('Error fetching admin dashboard stats:', err);
         setError(err.message || 'Failed to load stats');
       } finally {
         setLoading(false);
       }
     };
-
     fetchStats();
   }, []);
 
@@ -108,35 +76,26 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="container-custom py-10">
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center text-red-600 dark:text-red-400">
-          <p className="font-semibold">{error}</p>
+        <div className="glass-card p-6 text-center" style={{ borderColor: 'rgba(239,68,68,0.2)' }}>
+          <p className="font-semibold text-crimson-bright">{error}</p>
         </div>
       </div>
     );
   }
 
   const {
-    totalSales = 0,
-    totalOrders = 0,
-    pendingOrders = 0,
-    processingOrders = 0,
-    shippedOrders = 0,
-    deliveredOrders = 0,
-    cancelledOrders = 0,
-    totalProducts = 0,
-    outOfStockProducts = 0,
-    categorySales = [],
-    recentOrders = [],
+    totalSales = 0, totalOrders = 0, pendingOrders = 0, processingOrders = 0,
+    shippedOrders = 0, deliveredOrders = 0, cancelledOrders = 0,
+    totalProducts = 0, outOfStockProducts = 0, categorySales = [], recentOrders = [],
   } = stats || {};
 
-  // CSV Sales Report Export
+  const maxCategorySales = categorySales.length > 0 ? Math.max(...categorySales.map(c => c.sales)) : 1;
+
   const exportCSVReport = () => {
     if (!stats) return;
-
     let csvContent = 'data:text/csv;charset=utf-8,';
     csvContent += 'ShopSphere Admin Sales Report\n';
     csvContent += `Generated At,${new Date().toLocaleString()}\n\n`;
-
     csvContent += 'FINANCIAL METRICS\n';
     csvContent += `Total Revenue,INR ${totalSales.toFixed(2)}\n`;
     csvContent += `Total Orders,${totalOrders}\n`;
@@ -146,220 +105,141 @@ export default function Dashboard() {
     csvContent += `Delivered Orders,${deliveredOrders}\n`;
     csvContent += `Cancelled Orders,${cancelledOrders}\n`;
     csvContent += `Total Products,${totalProducts}\n`;
-    csvContent += `Stock Warnings (Out of Stock),${outOfStockProducts}\n\n`;
-
-    csvContent += 'REVENUE BY CATEGORY\n';
-    csvContent += 'Category,Revenue (INR),Quantity Sold\n';
-    categorySales.forEach((cat) => {
-      csvContent += `"${cat._id}",${cat.sales.toFixed(2)},${cat.quantity}\n`;
-    });
-    csvContent += '\n';
-
-    csvContent += 'RECENT ORDERS ACTIVITY\n';
-    csvContent += 'Order ID,Customer,Date,Total (INR),Status\n';
+    csvContent += `Stock Warnings,${outOfStockProducts}\n\n`;
+    csvContent += 'REVENUE BY CATEGORY\nCategory,Revenue (INR),Quantity Sold\n';
+    categorySales.forEach((cat) => { csvContent += `"${cat._id}",${cat.sales.toFixed(2)},${cat.quantity}\n`; });
+    csvContent += '\nRECENT ORDERS\nOrder ID,Customer,Date,Total (INR),Status\n';
     recentOrders.forEach((o) => {
       csvContent += `"${o._id}","${o.user?.name || 'Guest'}",${new Date(o.createdAt).toLocaleDateString()},${o.totalPrice.toFixed(2)},${o.status}\n`;
     });
-
-    const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `shopsphere_sales_report_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    link.setAttribute('href', encodeURI(csvContent));
+    link.setAttribute('download', `shopsphere_report_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link); link.click(); document.body.removeChild(link);
   };
 
-  // Find percentage for categories
-  const maxCategorySales = categorySales.length > 0 ? Math.max(...categorySales.map(c => c.sales)) : 1;
-
   const statCards = [
-    {
-      title: 'Total Revenue',
-      value: formatCurrency(totalSales),
-      icon: DollarSign,
-      color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-      description: 'Sum of all paid orders',
-    },
-    {
-      title: 'Total Orders',
-      value: totalOrders,
-      icon: ShoppingBag,
-      color: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 border-primary-500/20',
-      description: `${pendingOrders} pending, ${processingOrders} processing`,
-    },
-    {
-      title: 'Total Products',
-      value: totalProducts,
-      icon: Package,
-      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-      description: 'Current active catalog',
-    },
-    {
-      title: 'Stock Warnings',
-      value: outOfStockProducts,
-      icon: AlertTriangle,
-      color: outOfStockProducts > 0 
-        ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 animate-pulse' 
-        : 'bg-surface-500/10 text-surface-600 dark:text-surface-400 border-surface-500/20',
-      description: 'Out of stock products count',
-    },
+    { title: 'Total Revenue', value: formatCurrency(totalSales), icon: DollarSign, color: '#10B981', desc: 'All-time earnings' },
+    { title: 'Total Orders', value: totalOrders, icon: ShoppingBag, color: '#00D4FF', desc: `${pendingOrders} pending, ${processingOrders} processing` },
+    { title: 'Total Products', value: totalProducts, icon: Package, color: '#A855F7', desc: 'Active catalog items' },
+    { title: 'Stock Alerts', value: outOfStockProducts, icon: AlertTriangle, color: outOfStockProducts > 0 ? '#EF4444' : '#666666', desc: 'Out of stock items' },
   ];
 
+  const tabs = [
+    { key: 'overview', label: 'Overview', icon: BarChart3 },
+    { key: 'sellers', label: 'Manage Sellers', icon: Users },
+  ];
+
+  const statusColors = {
+    Delivered: { bg: 'rgba(16,185,129,0.12)', text: '#34D399', border: 'rgba(16,185,129,0.2)' },
+    Shipped: { bg: 'rgba(0,212,255,0.12)', text: '#00D4FF', border: 'rgba(0,212,255,0.2)' },
+    Processing: { bg: 'rgba(245,158,11,0.12)', text: '#FBBF24', border: 'rgba(245,158,11,0.2)' },
+    Cancelled: { bg: 'rgba(239,68,68,0.12)', text: '#F87171', border: 'rgba(239,68,68,0.2)' },
+    Pending: { bg: 'rgba(255,255,255,0.06)', text: '#999999', border: 'rgba(255,255,255,0.1)' },
+  };
+
   return (
-    <div className="container-custom py-10 space-y-10">
-      <style>{`
-        @media print {
-          header, footer, nav, button, a[href="/admin/products"], a[href="/admin/chats"], a[href="/admin/orders"], .btn-primary, .btn-secondary {
-            display: none !important;
-          }
-          body {
-            background: white !important;
-            color: #0f172a !important;
-          }
-          .container-custom {
-            max-width: 100% !important;
-            width: 100% !important;
-            padding: 0 !important;
-            margin: 0 !important;
-          }
-          .grid {
-            display: grid !important;
-            grid-template-cols: repeat(2, 1fr) !important;
-            gap: 15px !important;
-          }
-          .bg-white {
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: none !important;
-          }
-        }
-      `}</style>
+    <div className="container-custom py-8 sm:py-10 space-y-8">
+      <style>{`@media print { header, footer, nav, button, .btn-primary, .btn-secondary { display: none !important; } body { background: white !important; color: #0A0A0A !important; } }`}</style>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-primary-500 animate-pulse-soft" /> Admin Portal
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-frost flex items-center gap-2">
+            <Sparkles className="h-6 w-6 text-electric animate-pulse-soft" /> Admin Portal
           </h1>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
-            Real-time analytics and management controls for ShopSphere.
-          </p>
+          <p className="text-sm text-smoke mt-1">Real-time analytics and management controls</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <Link to="/admin/products" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
-            Manage Products
-          </Link>
-          <Link to="/admin/chats" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
-            Support Chats
-          </Link>
-          <Link to="/admin/orders" className="btn-secondary text-xs sm:text-sm py-2.5 px-4 font-semibold">
-            Manage Orders
-          </Link>
-          <button
-            onClick={exportCSVReport}
-            className="btn-primary text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center gap-1.5"
-          >
-            <Download className="h-4 w-4" /> Export CSV
+        <div className="flex flex-wrap gap-2">
+          {[
+            { to: '/admin/products', label: 'Products' },
+            { to: '/admin/chats', label: 'Support' },
+            { to: '/admin/orders', label: 'Orders' },
+          ].map((link) => (
+            <Link key={link.to} to={link.to} className="btn-secondary text-xs py-2 px-3 font-semibold">{link.label}</Link>
+          ))}
+          <button onClick={exportCSVReport} className="btn-primary text-xs py-2 px-3 font-semibold flex items-center gap-1.5">
+            <Download className="h-3.5 w-3.5" /> Export
           </button>
-          <button
-            onClick={() => window.print()}
-            className="btn-primary text-xs sm:text-sm py-2.5 px-4 font-semibold flex items-center gap-1.5"
-          >
-            <Printer className="h-4 w-4" /> Print PDF
+          <button onClick={() => window.print()} className="btn-secondary text-xs py-2 px-3 font-semibold flex items-center gap-1.5">
+            <Printer className="h-3.5 w-3.5" /> Print
           </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-surface-200 dark:border-surface-850 gap-4 mb-6">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`pb-3 px-2 font-bold text-sm border-b-2 transition-colors ${
-            activeTab === 'overview'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
-          }`}
-        >
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('sellers')}
-          className={`pb-3 px-2 font-bold text-sm border-b-2 transition-colors ${
-            activeTab === 'sellers'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200'
-          }`}
-        >
-          Manage Sellers
-        </button>
+      <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.04)' }}>
+        {tabs.map((tab) => (
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+              activeTab === tab.key
+                ? 'text-obsidian'
+                : 'text-smoke hover:text-frost'
+            }`}
+            style={activeTab === tab.key ? { background: 'linear-gradient(135deg, #00D4FF, #00A3CC)' } : {}}>
+            <tab.icon className="h-4 w-4" /> {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTab === 'overview' ? (
         <>
-          {/* Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Metrics */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {statCards.map((card, i) => (
-              <motion.div
-                key={card.title}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
+              <motion.div key={card.title}
+                initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
-                className={`bg-white dark:bg-surface-900 border ${card.color.split(' ')[2]} rounded-2xl p-6 shadow-sm flex flex-col justify-between`}
+                className="card p-5 flex flex-col justify-between relative overflow-hidden"
               >
+                <div className="absolute top-0 left-0 right-0 h-[2px]"
+                     style={{ background: `linear-gradient(90deg, ${card.color}, transparent)` }} />
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-sm font-medium text-surface-500 dark:text-surface-400">{card.title}</p>
-                    <h3 className="text-2xl font-bold text-surface-900 dark:text-white mt-1">{card.value}</h3>
+                    <p className="text-xs font-medium text-smoke">{card.title}</p>
+                    <h3 className="text-2xl font-bold text-frost mt-1">{card.value}</h3>
                   </div>
-                  <div className={`p-3 rounded-xl ${card.color.split(' ')[0]} ${card.color.split(' ')[1]}`}>
-                    <card.icon className="h-5 w-5" />
+                  <div className="p-2.5 rounded-xl" style={{ background: `${card.color}15`, border: `1px solid ${card.color}25` }}>
+                    <card.icon className="h-4 w-4" style={{ color: card.color }} />
                   </div>
                 </div>
-                <p className="text-xs text-surface-400 dark:text-surface-500 mt-4 flex items-center gap-1">
-                  <Clock className="h-3 w-3" /> {card.description}
+                <p className="text-[11px] text-smoke mt-3 flex items-center gap-1">
+                  <Clock className="h-3 w-3" /> {card.desc}
                 </p>
               </motion.div>
             ))}
           </div>
 
-          {/* Analytics & Charts section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Sales by Category */}
-            <motion.div
-              initial={{ opacity: 0, x: -15 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="lg:col-span-1 bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-6 shadow-sm flex flex-col"
-            >
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary-500" /> Category Revenue
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Category Revenue */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
+              className="lg:col-span-1 card p-5 flex flex-col">
+              <div className="mb-5">
+                <h3 className="text-base font-bold text-frost flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-electric" /> Category Revenue
                 </h3>
-                <p className="text-xs text-surface-400 mt-1">Distribution of sales by category</p>
+                <p className="text-[11px] text-smoke mt-1">Sales distribution by category</p>
               </div>
-
               {categorySales.length === 0 ? (
                 <div className="flex-grow flex items-center justify-center py-10">
-                  <p className="text-sm text-surface-400 dark:text-surface-500">No category sales recorded yet</p>
+                  <p className="text-sm text-smoke">No data yet</p>
                 </div>
               ) : (
-                <div className="space-y-5 flex-grow">
+                <div className="space-y-4 flex-grow">
                   {categorySales.map((cat) => {
-                    const percentage = Math.round((cat.sales / maxCategorySales) * 100);
+                    const pct = Math.round((cat.sales / maxCategorySales) * 100);
                     return (
                       <div key={cat._id} className="space-y-1.5">
                         <div className="flex justify-between text-xs font-semibold">
-                          <span className="text-surface-700 dark:text-surface-300">{cat._id}</span>
-                          <span className="text-surface-900 dark:text-white">
-                            {formatCurrency(cat.sales)} <span className="text-surface-400 font-normal">({cat.quantity} sold)</span>
-                          </span>
+                          <span className="text-cloud">{cat._id}</span>
+                          <span className="text-frost">{formatCurrency(cat.sales)} <span className="text-smoke font-normal">({cat.quantity})</span></span>
                         </div>
-                        <div className="w-full bg-surface-100 dark:bg-surface-800 h-2 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${percentage}%` }}
+                        <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                          <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}
-                            className="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full"
-                          />
+                            className="h-full rounded-full"
+                            style={{ background: 'linear-gradient(90deg, #00D4FF, #A855F7)' }} />
                         </div>
                       </div>
                     );
@@ -369,80 +249,49 @@ export default function Dashboard() {
             </motion.div>
 
             {/* Recent Orders */}
-            <motion.div
-              initial={{ opacity: 0, x: 15 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="lg:col-span-2 bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-6 shadow-sm"
-            >
-              <div className="flex justify-between items-center mb-6">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.1 }}
+              className="lg:col-span-2 card p-5">
+              <div className="flex justify-between items-center mb-5">
                 <div>
-                  <h3 className="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-                    <Clock className="h-5 w-5 text-primary-500" /> Recent Activity
+                  <h3 className="text-base font-bold text-frost flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-electric" /> Recent Activity
                   </h3>
-                  <p className="text-xs text-surface-400 mt-1">Latest 5 orders placed at ShopSphere</p>
+                  <p className="text-[11px] text-smoke mt-1">Latest orders</p>
                 </div>
-                <Link
-                  to="/admin/orders"
-                  className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline inline-flex items-center gap-1"
-                >
-                  All Orders <ArrowRight className="h-3 w-3" />
+                <Link to="/admin/orders" className="text-xs font-bold text-electric hover:underline inline-flex items-center gap-1">
+                  All <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
-
               {recentOrders.length === 0 ? (
-                <div className="py-12 text-center">
-                  <p className="text-sm text-surface-400 dark:text-surface-500">No orders registered in the system yet</p>
-                </div>
+                <div className="py-12 text-center"><p className="text-sm text-smoke">No orders yet</p></div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-surface-100 dark:border-surface-800 text-xs font-bold text-surface-400 uppercase tracking-wider">
-                        <th className="pb-3 font-semibold">Order ID</th>
-                        <th className="pb-3 font-semibold">Customer</th>
-                        <th className="pb-3 font-semibold">Date</th>
-                        <th className="pb-3 font-semibold">Total</th>
-                        <th className="pb-3 font-semibold text-right">Status</th>
+                      <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                        <th className="pb-3">Order</th><th className="pb-3">Customer</th><th className="pb-3">Date</th><th className="pb-3">Total</th><th className="pb-3 text-right">Status</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {recentOrders.map((order) => (
-                        <tr
-                          key={order._id}
-                          className="border-b border-surface-50 dark:border-surface-800/60 last:border-0 text-sm hover:bg-surface-50/40 dark:hover:bg-surface-800/30 transition-colors"
-                        >
-                          <td className="py-3.5 font-medium text-surface-900 dark:text-white truncate max-w-[120px]">
-                            <Link to={`/orders/${order._id}`} className="hover:text-primary-600 font-mono text-xs">
-                              {order._id}
-                            </Link>
-                          </td>
-                          <td className="py-3.5 text-surface-600 dark:text-surface-300 font-medium">
-                            {order.user?.name || 'Guest'}
-                          </td>
-                          <td className="py-3.5 text-surface-500 dark:text-surface-400 text-xs">
-                            {formatDate(order.createdAt)}
-                          </td>
-                          <td className="py-3.5 font-bold text-surface-900 dark:text-white">
-                            {formatCurrency(order.totalPrice)}
-                          </td>
-                          <td className="py-3.5 text-right">
-                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${
-                              order.status === 'Delivered'
-                                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400'
-                                : order.status === 'Shipped'
-                                ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/40 dark:text-blue-400'
-                                : order.status === 'Processing'
-                                ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400'
-                                : order.status === 'Cancelled'
-                                ? 'bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400'
-                                : 'bg-surface-100 text-surface-800 dark:bg-surface-800 dark:text-surface-300'
-                            }`}>
-                              {order.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {recentOrders.map((order) => {
+                        const sc = statusColors[order.status] || statusColors.Pending;
+                        return (
+                          <tr key={order._id} className="text-sm hover:bg-white/[0.02] transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                            <td className="py-3">
+                              <Link to={`/orders/${order._id}`} className="hover:text-electric font-mono text-[11px] text-mist">{order._id.slice(-8)}</Link>
+                            </td>
+                            <td className="py-3 text-cloud font-medium text-xs">{order.user?.name || 'Guest'}</td>
+                            <td className="py-3 text-smoke text-xs">{formatDate(order.createdAt)}</td>
+                            <td className="py-3 font-bold text-frost text-xs">{formatCurrency(order.totalPrice)}</td>
+                            <td className="py-3 text-right">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold"
+                                    style={{ background: sc.bg, color: sc.text, border: `1px solid ${sc.border}` }}>
+                                {order.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -451,42 +300,29 @@ export default function Dashboard() {
           </div>
         </>
       ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-6 shadow-sm"
-        >
-          <div className="flex justify-between items-center mb-6">
+        /* Sellers Tab */
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="card p-5">
+          <div className="flex justify-between items-center mb-5">
             <div>
-              <h3 className="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-                <Store className="h-5 w-5 text-primary-500" /> Seller Applications
+              <h3 className="text-base font-bold text-frost flex items-center gap-2">
+                <Store className="h-4 w-4 text-electric" /> Seller Applications
               </h3>
-              <p className="text-xs text-surface-400 mt-1">Review, approve, or suspend platform vendors</p>
+              <p className="text-[11px] text-smoke mt-1">Review and manage platform vendors</p>
             </div>
           </div>
-
           {vendorsLoading ? (
-            <div className="py-12 flex items-center justify-center">
-              <Spinner size="lg" />
-            </div>
+            <div className="py-12 flex items-center justify-center"><Spinner size="lg" /></div>
           ) : vendorsError ? (
-            <div className="py-6 text-center text-red-500 dark:text-red-400">
-              <p className="font-semibold">{vendorsError}</p>
-            </div>
+            <div className="py-6 text-center text-crimson-bright font-semibold">{vendorsError}</div>
           ) : vendors.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-sm text-surface-400 dark:text-surface-500">No seller applications registered yet.</p>
-            </div>
+            <div className="py-12 text-center text-smoke text-sm">No seller applications yet.</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left">
                 <thead>
-                  <tr className="border-b border-surface-100 dark:border-surface-800 text-xs font-bold text-surface-400 uppercase tracking-wider bg-surface-50/50 dark:bg-surface-800/20">
-                    <th className="py-3.5 px-4 font-semibold">Store</th>
-                    <th className="py-3.5 px-4 font-semibold">Seller Info</th>
-                    <th className="py-3.5 px-4 font-semibold">Phone</th>
-                    <th className="py-3.5 px-4 font-semibold">Status</th>
-                    <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                  <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                    <th className="py-3 px-3">Store</th><th className="py-3 px-3">Seller</th><th className="py-3 px-3">Phone</th>
+                    <th className="py-3 px-3">Status</th><th className="py-3 px-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -495,59 +331,38 @@ export default function Dashboard() {
                     const logoUrl = profile.logo || 'https://images.unsplash.com/photo-1472851294608-062f824d296e?w=80';
                     const isApproved = profile.isApproved;
                     return (
-                      <tr
-                        key={vendor._id}
-                        className="border-b border-surface-50 dark:border-surface-800/60 last:border-0 text-sm hover:bg-surface-50/40 dark:hover:bg-surface-800/30 transition-colors"
-                      >
-                        <td className="py-3.5 px-4 flex items-center gap-3">
-                          <img
-                            src={logoUrl}
-                            alt={profile.storeName}
-                            className="h-10 w-10 rounded-lg object-cover bg-surface-100 shrink-0 border border-surface-200/40"
-                          />
-                          <div className="max-w-[200px]">
-                            <p className="font-bold text-surface-900 dark:text-white truncate">{profile.storeName || 'Unnamed Store'}</p>
-                            <p className="text-xs text-surface-400 line-clamp-1">{profile.storeDescription || 'No description'}</p>
+                      <tr key={vendor._id} className="text-sm hover:bg-white/[0.02] transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                        <td className="py-3 px-3 flex items-center gap-3">
+                          <img src={logoUrl} alt={profile.storeName} className="h-9 w-9 rounded-lg object-cover shrink-0" style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }} />
+                          <div className="max-w-[180px]">
+                            <p className="font-bold text-frost text-xs truncate">{profile.storeName || 'Unnamed'}</p>
+                            <p className="text-[10px] text-smoke line-clamp-1">{profile.storeDescription || 'No description'}</p>
                           </div>
                         </td>
-                        <td className="py-3.5 px-4">
-                          <p className="font-semibold text-surface-900 dark:text-white">{vendor.name}</p>
-                          <p className="text-xs text-surface-400 font-mono">{vendor.email}</p>
+                        <td className="py-3 px-3">
+                          <p className="font-semibold text-frost text-xs">{vendor.name}</p>
+                          <p className="text-[10px] text-smoke font-mono">{vendor.email}</p>
                         </td>
-                        <td className="py-3.5 px-4 text-surface-600 dark:text-surface-300 font-medium font-mono text-xs">
-                          {profile.phone || 'N/A'}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
-                            isApproved
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400'
-                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400'
-                          }`}>
-                            {isApproved ? (
-                              <>
-                                <CheckCircle className="h-3 w-3" /> Approved
-                              </>
-                            ) : (
-                              <>
-                                <Clock className="h-3 w-3 animate-pulse" /> Pending
-                              </>
-                            )}
+                        <td className="py-3 px-3 text-smoke font-mono text-xs">{profile.phone || 'N/A'}</td>
+                        <td className="py-3 px-3">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold"
+                                style={isApproved
+                                  ? { background: 'rgba(16,185,129,0.12)', color: '#34D399', border: '1px solid rgba(16,185,129,0.2)' }
+                                  : { background: 'rgba(245,158,11,0.12)', color: '#FBBF24', border: '1px solid rgba(245,158,11,0.2)' }}>
+                            {isApproved ? <><CheckCircle className="h-3 w-3" /> Approved</> : <><Clock className="h-3 w-3 animate-pulse" /> Pending</>}
                           </span>
                         </td>
-                        <td className="py-3.5 px-4 text-right">
+                        <td className="py-3 px-3 text-right">
                           {isApproved ? (
-                            <button
-                              onClick={() => handleApproveVendor(vendor._id, false)}
-                              className="btn-secondary text-xs font-semibold py-1.5 px-3 rounded-xl flex items-center gap-1.5 ml-auto text-red-600 hover:text-red-700 bg-red-500/5 hover:bg-red-500/10 border-red-500/20"
-                            >
-                              <XCircle className="h-3.5 w-3.5" /> Suspend
+                            <button onClick={() => handleApproveVendor(vendor._id, false)}
+                              className="btn-danger text-[11px] py-1 px-2.5 rounded-lg flex items-center gap-1 ml-auto">
+                              <XCircle className="h-3 w-3" /> Suspend
                             </button>
                           ) : (
-                            <button
-                              onClick={() => handleApproveVendor(vendor._id, true)}
-                              className="btn-primary text-xs font-semibold py-1.5 px-3 rounded-xl flex items-center gap-1.5 ml-auto shadow-glow bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 border-none"
-                            >
-                              <CheckCircle className="h-3.5 w-3.5" /> Approve
+                            <button onClick={() => handleApproveVendor(vendor._id, true)}
+                              className="text-[11px] font-bold py-1 px-2.5 rounded-lg flex items-center gap-1 ml-auto"
+                              style={{ background: 'rgba(16,185,129,0.15)', color: '#34D399', border: '1px solid rgba(16,185,129,0.25)' }}>
+                              <CheckCircle className="h-3 w-3" /> Approve
                             </button>
                           )}
                         </td>

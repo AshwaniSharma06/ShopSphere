@@ -11,7 +11,6 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
     full: 'max-w-full mx-4',
   };
 
-  // Close on Escape key
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === 'Escape') onClose();
@@ -29,13 +28,13 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
           />
 
@@ -45,17 +44,15 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full ${sizes[size]} bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-100 dark:border-surface-800`}
+            className={`relative w-full ${sizes[size]} glass-3 rounded-2xl shadow-glass-lg`}
           >
             {/* Header */}
             {title && (
-              <div className="flex items-center justify-between px-6 py-4 border-b border-surface-100 dark:border-surface-800">
-                <h3 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
-                  {title}
-                </h3>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+                <h3 className="text-lg font-semibold text-frost">{title}</h3>
                 <button
                   onClick={onClose}
-                  className="p-1.5 rounded-lg text-surface-400 hover:text-surface-600 hover:bg-surface-100 dark:hover:text-surface-300 dark:hover:bg-surface-800 transition-colors"
+                  className="p-1.5 rounded-lg text-smoke hover:text-frost hover:bg-white/[0.06] transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -63,7 +60,7 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
             )}
 
             {/* Body */}
-            <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">{children}</div>
+            <div className="px-6 py-4 max-h-[70vh] overflow-y-auto scrollbar-thin">{children}</div>
           </motion.div>
         </div>
       )}

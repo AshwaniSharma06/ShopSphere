@@ -12,7 +12,8 @@ export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('shopsphere-theme');
     if (saved) return saved === 'dark';
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // Default to dark mode for the premium experience
+    return true;
   });
 
   useEffect(() => {

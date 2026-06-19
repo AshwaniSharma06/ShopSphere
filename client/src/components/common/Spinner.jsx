@@ -1,28 +1,29 @@
 export default function Spinner({ size = 'md', className = '' }) {
   const sizes = {
-    sm: 'h-5 w-5',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12',
-    xl: 'h-16 w-16',
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6',
+    lg: 'h-10 w-10',
   };
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <div
-        className={`${sizes[size]} animate-spin rounded-full border-[3px] border-surface-200 border-t-primary-600 dark:border-surface-700 dark:border-t-primary-400`}
-      />
-    </div>
-  );
-}
-
-export function PageSpinner() {
-  return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <Spinner size="xl" />
-        <p className="text-surface-500 dark:text-surface-400 text-sm animate-pulse-soft">
-          Loading...
-        </p>
+    <div className={`${sizes[size]} ${className}`}>
+      <div className="relative w-full h-full">
+        <div
+          className="absolute inset-0 rounded-full animate-spin"
+          style={{
+            border: '2px solid rgba(255,255,255,0.06)',
+            borderTopColor: '#00D4FF',
+          }}
+        />
+        <div
+          className="absolute inset-1 rounded-full animate-spin"
+          style={{
+            border: '2px solid transparent',
+            borderTopColor: '#A855F7',
+            animationDuration: '0.8s',
+            animationDirection: 'reverse',
+          }}
+        />
       </div>
     </div>
   );

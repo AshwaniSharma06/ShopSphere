@@ -33,50 +33,54 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validate();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
-
+    if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
     setLoading(true);
     try {
       await login(formData.email, formData.password);
       navigate(from, { replace: true });
     } catch (err) {
-      // Error is already set in context
+      // Error handled by context
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Animated gradient mesh background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full animate-mesh-move opacity-100"
+             style={{ background: 'radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full animate-mesh-move opacity-100"
+             style={{ background: 'radial-gradient(ellipse, rgba(168,85,247,0.06) 0%, transparent 70%)', filter: 'blur(60px)', animationDelay: '-7s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full animate-mesh-move opacity-100"
+             style={{ background: 'radial-gradient(ellipse, rgba(236,72,153,0.04) 0%, transparent 70%)', filter: 'blur(60px)', animationDelay: '-14s' }} />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 30, filter: 'blur(4px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
         <div className="glass-card p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center mb-4 shadow-glow">
-              <LogIn className="h-7 w-7 text-white" />
+            <div className="mx-auto h-14 w-14 rounded-2xl flex items-center justify-center mb-4"
+                 style={{ background: 'linear-gradient(135deg, #00D4FF, #A855F7)', boxShadow: '0 0 30px rgba(0,212,255,0.3)' }}>
+              <LogIn className="h-7 w-7 text-obsidian" />
             </div>
-            <h1 className="text-2xl font-bold text-surface-900 dark:text-white">
-              Welcome Back
-            </h1>
-            <p className="text-surface-500 dark:text-surface-400 mt-1 text-sm">
-              Sign in to your ShopSphere account
-            </p>
+            <h1 className="text-2xl font-bold text-frost">Welcome Back</h1>
+            <p className="text-smoke mt-1 text-sm">Sign in to your ShopSphere account</p>
           </div>
 
-          {/* Error Alert */}
+          {/* Error */}
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-3 rounded-xl bg-danger-light dark:bg-red-900/20 text-danger dark:text-red-400 text-sm font-medium text-center"
+              className="mb-6 p-3 rounded-xl text-sm font-medium text-center"
+              style={{ background: 'rgba(239,68,68,0.1)', color: '#F87171', border: '1px solid rgba(239,68,68,0.2)' }}
             >
               {error}
             </motion.div>
@@ -84,57 +88,26 @@ export default function Login() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <Input
-              label="Email Address"
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="you@example.com"
-              icon={Mail}
-              error={formErrors.email}
-              required
-            />
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="••••••••"
-              icon={Lock}
-              error={formErrors.password}
-              required
-            />
+            <Input label="Email Address" type="email" name="email" value={formData.email}
+              onChange={handleChange} placeholder="you@example.com" icon={Mail} error={formErrors.email} required />
+            <Input label="Password" type="password" name="password" value={formData.password}
+              onChange={handleChange} placeholder="••••••••" icon={Lock} error={formErrors.password} required />
 
             <div className="flex items-center justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium"
-              >
+              <Link to="/forgot-password" className="text-sm text-electric hover:underline font-medium">
                 Forgot password?
               </Link>
             </div>
 
-            <Button
-              type="submit"
-              loading={loading}
-              className="w-full"
-              size="lg"
-            >
+            <Button type="submit" loading={loading} className="w-full" size="lg">
               Sign In
             </Button>
           </form>
 
           {/* Register Link */}
-          <p className="text-center mt-6 text-sm text-surface-500 dark:text-surface-400">
+          <p className="text-center mt-6 text-sm text-smoke">
             Don't have an account?{' '}
-            <Link
-              to="/register"
-              className="text-primary-600 dark:text-primary-400 font-semibold hover:underline"
-            >
-              Create one
-            </Link>
+            <Link to="/register" className="text-electric font-semibold hover:underline">Create one</Link>
           </p>
         </div>
       </motion.div>
