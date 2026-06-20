@@ -96,7 +96,7 @@ export default function OrderDetails() {
       <div className="container-custom py-24 flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <Spinner size="lg" className="mx-auto" />
-          <p className="text-surface-500 dark:text-surface-400 font-medium">Loading invoice details...</p>
+          <p className="text-smoke font-medium">Loading invoice details...</p>
         </div>
       </div>
     );
@@ -105,9 +105,9 @@ export default function OrderDetails() {
   if (error || !order) {
     return (
       <div className="container-custom py-20 text-center">
-        <div className="max-w-md mx-auto card p-8 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm glass-card">
-          <h2 className="text-xl font-bold text-surface-900 dark:text-white mb-2">Order Not Found</h2>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mb-6">{error || 'We cannot find the order you are looking for.'}</p>
+        <div className="max-w-md mx-auto glass-card p-8">
+          <h2 className="text-xl font-bold text-frost mb-2">Order Not Found</h2>
+          <p className="text-sm text-smoke mb-6">{error || 'We cannot find the order you are looking for.'}</p>
           <Link to="/orders" className="btn-primary w-full gap-2">
             <ArrowLeft className="h-4 w-4" /> Back to My Orders
           </Link>
@@ -155,16 +155,16 @@ export default function OrderDetails() {
         }
       `}</style>
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-surface-200 dark:border-surface-800 pb-6 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-6 mb-8">
         <div>
-          <Link to="/orders" className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline mb-3">
+          <Link to="/orders" className="inline-flex items-center gap-1.5 text-xs font-bold text-electric hover:underline mb-3">
             <ArrowLeft className="h-3.5 w-3.5" /> Back to My Orders
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
-            Order #{order._id.toUpperCase()}
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-frost">
+            Order <span className="text-gradient">#{order._id.toUpperCase()}</span>
           </h1>
-          <p className="text-sm text-surface-500 mt-1.5">
-            Placed on <span className="font-bold text-surface-700 dark:text-surface-300">{formatDate(order.createdAt)}</span>
+          <p className="text-sm text-smoke mt-1.5">
+            Placed on <span className="font-bold text-mist">{formatDate(order.createdAt)}</span>
           </p>
         </div>
         
@@ -176,7 +176,7 @@ export default function OrderDetails() {
           >
             <Printer className="h-3.5 w-3.5" /> Print Invoice
           </button>
-          <span className="badge-primary px-3 py-1.5 rounded-xl font-bold text-xs uppercase tracking-wide">
+          <span className="badge-primary px-3 py-1.5 rounded-xl font-bold text-xs">
             {order.status}
           </span>
         </div>
@@ -187,18 +187,18 @@ export default function OrderDetails() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Shipping destination details card */}
-          <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="h-4.5 w-4.5 text-primary-500" /> Shipping Information
+          <div className="card p-5 space-y-4">
+            <h3 className="text-sm font-bold text-frost uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="h-[18px] w-[18px] text-electric" /> Shipping Information
             </h3>
-            <div className="text-sm pl-6.5 space-y-2">
-              <p className="text-surface-700 dark:text-surface-200">
-                <span className="font-bold text-surface-900 dark:text-white">Customer name:</span> {order.user?.name}
+            <div className="text-sm pl-7 space-y-2">
+              <p className="text-mist">
+                <span className="font-bold text-frost">Customer name:</span> {order.user?.name}
               </p>
-              <p className="text-surface-700 dark:text-surface-200">
-                <span className="font-bold text-surface-900 dark:text-white">Email contact:</span> {order.user?.email}
+              <p className="text-mist">
+                <span className="font-bold text-frost">Email contact:</span> {order.user?.email}
               </p>
-              <p className="text-surface-500 leading-relaxed pt-1">
+              <p className="text-smoke leading-relaxed pt-1">
                 {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.postalCode}, {order.shippingAddress.country}
               </p>
             </div>
@@ -206,17 +206,17 @@ export default function OrderDetails() {
             {/* Delivery Alert bar */}
             <div className={`p-3.5 pl-5 rounded-xl border flex items-center gap-3 text-xs font-semibold ${
               order.isDelivered
-                ? 'bg-success-light border-success/20 text-success-dark dark:bg-green-950/20 dark:text-green-400'
-                : 'bg-amber-500/10 border-amber-500/20 text-amber-800 dark:text-amber-300'
+                ? 'bg-plasma/10 border-plasma/20 text-plasma-bright'
+                : 'bg-amber/10 border-amber/20 text-amber-bright'
             }`}>
               {order.isDelivered ? (
                 <>
-                  <CheckCircle2 className="h-4.5 w-4.5 fill-current shrink-0" />
+                  <CheckCircle2 className="h-[18px] w-[18px] fill-current shrink-0" />
                   <span>Delivered on {formatDate(order.deliveredAt)}</span>
                 </>
               ) : (
                 <>
-                  <AlertTriangle className="h-4.5 w-4.5 shrink-0" />
+                  <AlertTriangle className="h-[18px] w-[18px] shrink-0" />
                   <span>Delivery status: Pending / In transit</span>
                 </>
               )}
@@ -224,17 +224,17 @@ export default function OrderDetails() {
           </div>
 
           {/* Payment info details card */}
-          <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
-              <CreditCard className="h-4.5 w-4.5 text-primary-500" /> Payment & Billing
+          <div className="card p-5 space-y-4">
+            <h3 className="text-sm font-bold text-frost uppercase tracking-wider flex items-center gap-2">
+              <CreditCard className="h-[18px] w-[18px] text-electric" /> Payment & Billing
             </h3>
-            <div className="text-sm pl-6.5 space-y-1.5">
-              <p className="text-surface-700 dark:text-surface-200">
-                <span className="font-bold text-surface-900 dark:text-white">Method selection:</span> {order.paymentMethod === 'Card' ? 'Credit / Debit Card' : 'Cash on Delivery (COD)'}
+            <div className="text-sm pl-7 space-y-1.5">
+              <p className="text-mist">
+                <span className="font-bold text-frost">Method selection:</span> {order.paymentMethod === 'Card' ? 'Credit / Debit Card' : 'Cash on Delivery (COD)'}
               </p>
               {order.isPaid && order.paymentResult && (
-                <p className="text-surface-500 text-xs">
-                  <span className="font-bold text-surface-750">Transaction ID:</span> {order.paymentResult.id}
+                <p className="text-smoke text-xs">
+                  <span className="font-bold text-mist">Transaction ID:</span> {order.paymentResult.id}
                 </p>
               )}
             </div>
@@ -242,17 +242,17 @@ export default function OrderDetails() {
             {/* Paid Alert bar */}
             <div className={`p-3.5 pl-5 rounded-xl border flex items-center gap-3 text-xs font-semibold ${
               order.isPaid
-                ? 'bg-success-light border-success/20 text-success-dark dark:bg-green-950/20 dark:text-green-400'
-                : 'bg-danger-light border-danger/20 text-danger-dark dark:bg-red-950/20 dark:text-red-400'
+                ? 'bg-plasma/10 border-plasma/20 text-plasma-bright'
+                : 'bg-crimson/10 border-crimson/20 text-crimson-bright'
             }`}>
               {order.isPaid ? (
                 <>
-                  <CheckCircle2 className="h-4.5 w-4.5 fill-current shrink-0" />
+                  <CheckCircle2 className="h-[18px] w-[18px] fill-current shrink-0" />
                   <span>Paid on {formatDate(order.paidAt)}</span>
                 </>
               ) : (
                 <>
-                  <AlertTriangle className="h-4.5 w-4.5 shrink-0" />
+                  <AlertTriangle className="h-[18px] w-[18px] shrink-0" />
                   <span>Awaiting Payment Settlement</span>
                 </>
               )}
@@ -260,26 +260,26 @@ export default function OrderDetails() {
           </div>
 
           {/* Items card */}
-          <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-4">
-            <h3 className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider">Purchased Items</h3>
+          <div className="card p-5 space-y-4">
+            <h3 className="text-sm font-bold text-frost uppercase tracking-wider">Purchased Items</h3>
             
-            <div className="divide-y divide-surface-100 dark:divide-surface-800">
+            <div className="divide-y divide-white/5">
               {order.orderItems.map((item, idx) => {
                 if (!item.product) return null;
                 return (
                   <div key={idx} className="py-3.5 flex items-center justify-between text-sm gap-4">
                     <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-surface-50 dark:bg-surface-950 p-1 border border-surface-150 shrink-0">
+                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-white/3 p-1 border border-white/10 shrink-0">
                         <img src={item.product.images?.[0]} alt="" className="h-full w-full object-contain rounded" />
                       </div>
                       <div className="min-w-0">
-                        <Link to={`/product/${item.product._id}`} className="font-bold text-surface-900 dark:text-white hover:text-primary-600 truncate block">
+                        <Link to={`/product/${item.product._id}`} className="font-bold text-frost hover:text-electric truncate block transition-colors">
                           {item.product.title}
                         </Link>
-                        <span className="text-xs text-surface-450 block mt-0.5">{item.quantity} x {formatCurrency(item.price)}</span>
+                        <span className="text-xs text-smoke block mt-0.5">{item.quantity} x {formatCurrency(item.price)}</span>
                       </div>
                     </div>
-                    <span className="font-extrabold text-surface-900 dark:text-white shrink-0">
+                    <span className="font-extrabold text-frost shrink-0">
                       {formatCurrency(item.price * item.quantity)}
                     </span>
                   </div>
@@ -292,30 +292,30 @@ export default function OrderDetails() {
         {/* Right Side: Billing summary & mock pay screen */}
         <div className="lg:col-span-4 space-y-6">
           {/* Order sums card */}
-          <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-5 glass-card">
-            <h3 className="text-base font-bold text-surface-900 dark:text-white">Financial Summary</h3>
+          <div className="glass-card p-5 space-y-5">
+            <h3 className="text-base font-bold text-frost">Financial Summary</h3>
             <div className="space-y-3.5 text-xs">
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>Items Subtotal</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-200">{formatCurrency(itemsSubtotal)}</span>
+                <span className="font-semibold text-frost">{formatCurrency(itemsSubtotal)}</span>
               </div>
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>Shipping Fee</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-200">
-                  {order.shippingPrice === 0 ? <span className="text-success uppercase font-bold text-[10px]">Free</span> : formatCurrency(order.shippingPrice)}
+                <span className="font-semibold text-frost">
+                  {order.shippingPrice === 0 ? <span className="text-plasma uppercase font-bold text-[10px]">Free</span> : formatCurrency(order.shippingPrice)}
                 </span>
               </div>
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>GST (18%)</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-200">{formatCurrency(order.taxPrice)}</span>
+                <span className="font-semibold text-frost">{formatCurrency(order.taxPrice)}</span>
               </div>
             </div>
 
-            <hr className="border-surface-200 dark:border-surface-800/80" />
+            <div className="border-t border-white/5" />
 
             <div className="flex justify-between items-baseline pt-1">
-              <span className="text-sm font-bold text-surface-900 dark:text-white">Amount Total</span>
-              <span className="text-lg font-extrabold text-primary-600 dark:text-primary-455">{formatCurrency(order.totalPrice)}</span>
+              <span className="text-sm font-bold text-frost">Amount Total</span>
+              <span className="text-lg font-extrabold text-electric">{formatCurrency(order.totalPrice)}</span>
             </div>
           </div>
 
@@ -323,24 +323,24 @@ export default function OrderDetails() {
           {!order.isPaid && order.paymentMethod === 'Card' && (
             <div className="space-y-4">
               {paymentIntentData.loading ? (
-                <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm flex flex-col items-center justify-center py-8 space-y-3">
+                <div className="card p-5 flex flex-col items-center justify-center py-8 space-y-3">
                   <Spinner size="md" />
-                  <p className="text-xs text-surface-500">Initializing secure payment gateway...</p>
+                  <p className="text-xs text-smoke">Initializing secure payment gateway...</p>
                 </div>
               ) : paymentIntentData.error ? (
-                <div className="card p-5 border border-danger/25 bg-danger-light/10 text-danger rounded-2xl shadow-sm space-y-2">
-                  <p className="text-xs font-bold uppercase tracking-wider text-danger-dark">Gateway Error</p>
-                  <p className="text-xs text-danger-dark">{paymentIntentData.error}</p>
+                <div className="card p-5 border border-crimson/20 bg-crimson/5 space-y-2">
+                  <p className="text-xs font-bold uppercase tracking-wider text-crimson-bright">Gateway Error</p>
+                  <p className="text-xs text-crimson-bright">{paymentIntentData.error}</p>
                 </div>
               ) : paymentIntentData.clientSecret ? (
                 <div className="space-y-4">
                   {payError && (
-                    <div className="p-3 bg-danger-light border border-danger/10 text-danger-dark font-semibold text-xs rounded-xl">
+                    <div className="p-3 bg-crimson/10 border border-crimson/20 text-crimson-bright font-semibold text-xs rounded-xl">
                       {payError}
                     </div>
                   )}
                   {paySuccess && (
-                    <div className="p-3 bg-success-light border border-success/10 text-success-dark font-semibold text-xs rounded-xl">
+                    <div className="p-3 bg-plasma/10 border border-plasma/20 text-plasma-bright font-semibold text-xs rounded-xl">
                       {paySuccess}
                     </div>
                   )}
