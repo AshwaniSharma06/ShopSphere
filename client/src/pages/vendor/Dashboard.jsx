@@ -41,8 +41,8 @@ export default function Dashboard() {
   if (error) {
     return (
       <div className="container-custom py-10">
-        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center text-red-600 dark:text-red-400">
-          <p className="font-semibold">{error}</p>
+        <div className="bg-crimson/10 border border-crimson/20 rounded-2xl p-6 text-center text-crimson-bright font-semibold">
+          <p>{error}</p>
         </div>
       </div>
     );
@@ -63,48 +63,46 @@ export default function Dashboard() {
       title: 'Net Earnings',
       value: formatCurrency(netEarnings),
       icon: DollarSign,
-      color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+      color: '#10B981', // plasma green
       description: 'Your share (after 10% commission)',
     },
     {
       title: 'Gross Revenue',
       value: formatCurrency(totalSales),
       icon: TrendingUp,
-      color: 'bg-primary-500/10 text-primary-600 dark:text-primary-400 border-primary-500/20',
+      color: '#00D4FF', // electric blue
       description: `Commission paid: ${formatCurrency(commissionPaid)}`,
     },
     {
       title: 'Active Listings',
       value: totalProducts,
       icon: Package,
-      color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+      color: '#A855F7', // neon purple
       description: `${totalItemsSold} items sold so far`,
     },
     {
       title: 'Out of Stock',
       value: outOfStockProducts,
       icon: AlertTriangle,
-      color: outOfStockProducts > 0 
-        ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20 animate-pulse' 
-        : 'bg-surface-500/10 text-surface-600 dark:text-surface-400 border-surface-500/20',
+      color: outOfStockProducts > 0 ? '#EF4444' : '#666666', // crimson or smoke
       description: 'Needs inventory replenishment',
     },
   ];
 
   return (
-    <div className="container-custom py-10 space-y-10">
+    <div className="container-custom py-10 space-y-10 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
-            <Sparkles className="h-7 w-7 text-primary-500 animate-pulse-soft" /> Seller Dashboard
+          <h1 className="text-3xl font-extrabold tracking-tight text-frost flex items-center gap-2">
+            <Sparkles className="h-7 w-7 text-electric animate-pulse-soft" /> Seller Dashboard
           </h1>
-          <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
+          <p className="text-sm text-smoke mt-1">
             Overview metrics, sales counts, and inventory status alerts.
           </p>
         </div>
         <div>
-          <Link to="/vendor/products" className="btn-primary text-sm py-2.5 px-5 font-semibold">
+          <Link to="/vendor/products" className="btn-primary text-sm py-2.5 px-5 font-semibold rounded-xl">
             Manage Catalog Products
           </Link>
         </div>
@@ -118,18 +116,20 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.05 }}
-            className={`bg-white dark:bg-surface-900 border ${card.color.split(' ')[2]} rounded-2xl p-6 shadow-sm flex flex-col justify-between`}
+            className="glass-card p-6 flex flex-col justify-between relative overflow-hidden"
           >
+            <div className="absolute top-0 left-0 right-0 h-[2px]"
+                 style={{ background: `linear-gradient(90deg, ${card.color}, transparent)` }} />
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm font-medium text-surface-500 dark:text-surface-400">{card.title}</p>
-                <h3 className="text-2xl font-bold text-surface-900 dark:text-white mt-1">{card.value}</h3>
+                <p className="text-sm font-medium text-smoke">{card.title}</p>
+                <h3 className="text-2xl font-bold text-frost mt-1">{card.value}</h3>
               </div>
-              <div className={`p-3 rounded-xl ${card.color.split(' ')[0]} ${card.color.split(' ')[1]}`}>
-                <card.icon className="h-5 w-5" />
+              <div className="p-3 rounded-xl" style={{ background: `${card.color}15`, border: `1px solid ${card.color}25` }}>
+                <card.icon className="h-5 w-5" style={{ color: card.color }} />
               </div>
             </div>
-            <p className="text-xs text-surface-400 dark:text-surface-500 mt-4 flex items-center gap-1">
+            <p className="text-xs text-smoke mt-4 flex items-center gap-1">
               <Clock className="h-3 w-3" /> {card.description}
             </p>
           </motion.div>
@@ -142,26 +142,26 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-6 shadow-sm"
+          className="glass-card p-6"
         >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="text-lg font-bold text-surface-900 dark:text-white flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5 text-primary-500" /> Recent Sales
+              <h3 className="text-lg font-bold text-frost flex items-center gap-2">
+                <ShoppingBag className="h-5 w-5 text-electric" /> Recent Sales
               </h3>
-              <p className="text-xs text-surface-400 mt-1">Latest purchases of your store products</p>
+              <p className="text-xs text-smoke mt-1">Latest purchases of your store products</p>
             </div>
           </div>
 
           {recentSales.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-sm text-surface-400 dark:text-surface-500">No items sold yet. Start listing products to generate sales!</p>
+              <p className="text-sm text-smoke">No items sold yet. Start listing products to generate sales!</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-surface-100 dark:border-surface-800 text-xs font-bold text-surface-400 uppercase tracking-wider">
+                  <tr className="border-b border-white/10 text-xs font-bold text-smoke uppercase tracking-wider">
                     <th className="pb-3 font-semibold">Product</th>
                     <th className="pb-3 font-semibold">Price</th>
                     <th className="pb-3 font-semibold text-center">Qty</th>
@@ -173,21 +173,21 @@ export default function Dashboard() {
                   {recentSales.map((sale, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-surface-50 dark:border-surface-800/60 last:border-0 text-sm hover:bg-surface-50/40 dark:hover:bg-surface-800/30 transition-colors"
+                      className="border-b border-white/5 last:border-0 text-sm hover:bg-white/2 transition-colors"
                     >
-                      <td className="py-3.5 font-bold text-surface-900 dark:text-white truncate max-w-[200px]">
+                      <td className="py-3.5 font-bold text-frost truncate max-w-[200px]">
                         {sale.title}
                       </td>
-                      <td className="py-3.5 text-surface-600 dark:text-surface-300 font-medium">
+                      <td className="py-3.5 text-mist font-medium">
                         {formatCurrency(sale.price)}
                       </td>
-                      <td className="py-3.5 text-center text-surface-500 dark:text-surface-400 font-semibold">
+                      <td className="py-3.5 text-center text-smoke font-semibold">
                         {sale.quantity}
                       </td>
-                      <td className="py-3.5 font-extrabold text-primary-600 dark:text-primary-400">
+                      <td className="py-3.5 font-extrabold text-electric">
                         {formatCurrency(sale.total)}
                       </td>
-                      <td className="py-3.5 text-right text-surface-450 text-xs">
+                      <td className="py-3.5 text-right text-smoke text-xs">
                         {formatDate(sale.createdAt)}
                       </td>
                     </tr>

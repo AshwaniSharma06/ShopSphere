@@ -171,38 +171,38 @@ export default function Products() {
   });
 
   return (
-    <div className="container-custom py-10 space-y-8">
+    <div className="container-custom py-10 space-y-8 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white flex items-center gap-2">
-            <Package className="h-7 w-7 text-primary-500" /> Store Inventory
+          <h1 className="text-3xl font-extrabold tracking-tight text-frost flex items-center gap-2">
+            <Package className="h-7 w-7 text-electric" /> Store Inventory
           </h1>
-          <p className="text-sm text-surface-500 mt-1">
+          <p className="text-sm text-smoke mt-1">
             Manage your store list, catalog details, pricing discounts, and stocks.
           </p>
         </div>
-        <button onClick={openAddModal} className="btn-primary text-sm py-2.5 px-4 font-semibold gap-2 self-start sm:self-auto">
+        <button onClick={openAddModal} className="btn-primary text-sm py-2.5 px-4 font-semibold gap-2 self-start sm:self-auto rounded-xl">
           <Plus className="h-4 w-4" /> Add Product
         </button>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row gap-4">
+      <div className="glass-card p-4 flex flex-col md:flex-row gap-4">
         <div className="relative flex-grow">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-smoke" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search by title, tags, description..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-800 border-0 text-sm text-surface-900 dark:text-surface-100 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="input-field w-full pl-10 pr-4 py-2.5 text-sm"
           />
         </div>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="rounded-xl bg-surface-50 dark:bg-surface-800 border-0 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 px-4 py-2.5 min-w-[200px]"
+          className="input-field text-sm px-4 py-2.5 min-w-[200px]"
         >
           <option value="">All Categories</option>
           {categories.map((cat) => (
@@ -219,17 +219,17 @@ export default function Products() {
           <Spinner size="lg" />
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="text-center py-20 bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl">
-          <AlertCircle className="h-10 w-10 text-surface-400 mx-auto mb-3" />
-          <p className="text-sm font-semibold text-surface-500 dark:text-surface-400">No products found</p>
-          <p className="text-xs text-surface-400 mt-1">Add items to your inventory storefront to view catalog lists.</p>
+        <div className="text-center py-20 glass-card">
+          <AlertCircle className="h-10 w-10 text-smoke mx-auto mb-3" />
+          <p className="text-sm font-semibold text-frost">No products found</p>
+          <p className="text-xs text-smoke mt-1">Add items to your inventory storefront to view catalog lists.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl shadow-sm overflow-hidden">
+        <div className="glass-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-surface-100 dark:border-surface-800 text-xs font-bold text-surface-400 uppercase tracking-wider bg-surface-50/50 dark:bg-surface-800/20">
+                <tr className="border-b border-white/10 text-xs font-bold text-smoke uppercase tracking-wider bg-white/2">
                   <th className="py-4 px-6">Product</th>
                   <th className="py-4 px-6">Category</th>
                   <th className="py-4 px-6">Price</th>
@@ -246,27 +246,27 @@ export default function Products() {
                   return (
                     <tr
                       key={product._id}
-                      className="border-b border-surface-50 dark:border-surface-800/60 last:border-0 text-sm hover:bg-surface-50/30 dark:hover:bg-surface-800/20 transition-colors"
+                      className="border-b border-white/5 last:border-0 text-sm hover:bg-white/2 transition-colors"
                     >
-                      <td className="py-4 px-6 font-medium text-surface-900 dark:text-white flex items-center gap-3">
+                      <td className="py-4 px-6 font-medium text-frost flex items-center gap-3">
                         <img
                           src={mainImage}
                           alt={product.title}
-                          className="h-10 w-10 rounded-lg object-cover bg-surface-100 shrink-0 border border-surface-200/40"
+                          className="h-10 w-10 rounded-lg object-cover bg-white/5 shrink-0 border border-white/10"
                         />
                         <div className="truncate max-w-[200px]">
-                          <p className="font-semibold text-surface-900 dark:text-white truncate">{product.title}</p>
-                          <p className="text-xs text-surface-400 truncate font-mono">{product._id}</p>
+                          <p className="font-semibold text-frost truncate">{product.title}</p>
+                          <p className="text-xs text-smoke truncate font-mono">{product._id}</p>
                         </div>
                       </td>
-                      <td className="py-4 px-6 text-surface-600 dark:text-surface-300 font-medium">
+                      <td className="py-4 px-6 text-mist font-medium">
                         {categoryName}
                       </td>
                       <td className="py-4 px-6">
                         <div className="flex flex-col">
-                          <span className="font-bold text-surface-900 dark:text-white">{formatCurrency(product.price)}</span>
+                          <span className="font-bold text-frost">{formatCurrency(product.price)}</span>
                           {product.discountPercent > 0 && (
-                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                            <span className="text-[10px] font-bold text-plasma-bright">
                               -{product.discountPercent}% Off
                             </span>
                           )}
@@ -275,10 +275,10 @@ export default function Products() {
                       <td className="py-4 px-6">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${
                           product.stock === 0
-                            ? 'bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-400'
+                            ? 'bg-crimson/10 border border-crimson/20 text-crimson-bright'
                             : isLowStock
-                            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400 animate-pulse'
-                            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400'
+                            ? 'bg-amber/10 border border-amber/20 text-amber-bright animate-pulse'
+                            : 'bg-plasma/10 border border-plasma/20 text-plasma-bright'
                         }`}>
                           {product.stock} left
                         </span>
@@ -286,12 +286,12 @@ export default function Products() {
                       <td className="py-4 px-6">
                         <div className="flex flex-wrap gap-1">
                           {product.isFeatured && (
-                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-primary-100 text-primary-800 dark:bg-primary-950/40 dark:text-primary-400 text-[10px] font-extrabold uppercase">
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-electric/10 border border-electric/20 text-electric text-[10px] font-extrabold uppercase">
                               <Sparkles className="h-2.5 w-2.5" /> Featured
                             </span>
                           )}
                           {product.isTrending && (
-                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 dark:bg-orange-950/40 dark:text-orange-400 text-[10px] font-extrabold uppercase">
+                            <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-neon/10 border border-neon/20 text-neon-bright text-[10px] font-extrabold uppercase">
                               Trending
                             </span>
                           )}
@@ -301,14 +301,14 @@ export default function Products() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openEditModal(product)}
-                            className="p-2 text-surface-500 hover:text-primary-600 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors"
+                            className="p-2 text-smoke hover:text-electric hover:bg-white/5 rounded-lg transition-colors"
                             title="Edit Product"
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(product._id, product.title)}
-                            className="p-2 text-surface-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            className="p-2 text-smoke hover:text-crimson-bright hover:bg-crimson/10 rounded-lg transition-colors"
                             title="Delete Product"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -327,33 +327,33 @@ export default function Products() {
       {/* Create / Edit Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsModalOpen(false)}
-              className="absolute inset-0 bg-surface-950/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
 
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-3xl shadow-xl overflow-hidden max-h-[90vh] flex flex-col m-4 z-10"
+              className="relative w-full max-w-2xl rounded-3xl overflow-hidden max-h-[90vh] flex flex-col z-10 glass-card border border-white/[0.08] shadow-glow-sm"
             >
-              <div className="p-6 border-b border-surface-100 dark:border-surface-800 flex justify-between items-center bg-surface-50/50 dark:bg-surface-800/10">
+              <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/2">
                 <div>
-                  <h3 className="text-lg font-bold text-surface-900 dark:text-white">
+                  <h3 className="text-lg font-bold text-frost">
                     {editingProduct ? 'Edit Product Details' : 'Add New Store Product'}
                   </h3>
-                  <p className="text-xs text-surface-400 mt-0.5">
+                  <p className="text-xs text-smoke mt-0.5">
                     {editingProduct ? `Modifying ID: ${editingProduct._id}` : 'List a new item in your storefront'}
                   </p>
                 </div>
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="p-2 rounded-xl text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                  className="p-2 rounded-xl text-smoke hover:bg-white/5 transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -361,13 +361,13 @@ export default function Products() {
 
               <form onSubmit={handleFormSubmit} className="flex-grow overflow-y-auto p-6 space-y-5">
                 {error && (
-                  <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-2xl text-sm text-red-600 dark:text-red-400">
+                  <div className="p-4 bg-crimson/10 border border-crimson/20 rounded-2xl text-sm text-crimson-bright font-semibold">
                     {error}
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Product Title *</label>
+                  <label className="text-xs font-bold text-smoke uppercase tracking-wide">Product Title *</label>
                   <input
                     type="text"
                     name="title"
@@ -375,12 +375,12 @@ export default function Products() {
                     value={formFields.title}
                     onChange={handleInputChange}
                     placeholder="e.g. Wireless Bluetooth Headphones"
-                    className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="input-field w-full text-sm"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Description *</label>
+                  <label className="text-xs font-bold text-smoke uppercase tracking-wide">Description *</label>
                   <textarea
                     name="description"
                     required
@@ -388,19 +388,19 @@ export default function Products() {
                     value={formFields.description}
                     onChange={handleInputChange}
                     placeholder="Provide a detailed product description..."
-                    className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="input-field w-full text-sm"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Category *</label>
+                    <label className="text-xs font-bold text-smoke uppercase tracking-wide">Category *</label>
                     <select
                       name="category"
                       required
                       value={formFields.category}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200/50 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                      className="input-field w-full text-sm"
                     >
                       {categories.map((cat) => (
                         <option key={cat._id} value={cat._id}>
@@ -411,7 +411,7 @@ export default function Products() {
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Stock Quantity *</label>
+                    <label className="text-xs font-bold text-smoke uppercase tracking-wide">Stock Quantity *</label>
                     <input
                       type="number"
                       name="stock"
@@ -420,14 +420,14 @@ export default function Products() {
                       value={formFields.stock}
                       onChange={handleInputChange}
                       placeholder="e.g. 50"
-                      className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                      className="input-field w-full text-sm"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Price (₹) *</label>
+                    <label className="text-xs font-bold text-smoke uppercase tracking-wide">Price (₹) *</label>
                     <input
                       type="number"
                       name="price"
@@ -436,12 +436,12 @@ export default function Products() {
                       value={formFields.price}
                       onChange={handleInputChange}
                       placeholder="e.g. 2999"
-                      className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                      className="input-field w-full text-sm"
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Discount Percent (%)</label>
+                    <label className="text-xs font-bold text-smoke uppercase tracking-wide">Discount Percent (%)</label>
                     <input
                       type="number"
                       name="discountPercent"
@@ -450,47 +450,47 @@ export default function Products() {
                       value={formFields.discountPercent}
                       onChange={handleInputChange}
                       placeholder="e.g. 15"
-                      className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                      className="input-field w-full text-sm"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Image URLs (comma separated)</label>
+                  <label className="text-xs font-bold text-smoke uppercase tracking-wide">Image URLs (comma separated)</label>
                   <input
                     type="text"
                     name="images"
                     value={formFields.images}
                     onChange={handleInputChange}
                     placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg"
-                    className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="input-field w-full text-sm"
                   />
-                  <p className="text-[10px] text-surface-400">Provide direct image links separated by a comma.</p>
+                  <p className="text-[10px] text-smoke">Provide direct image links separated by a comma.</p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-surface-500 uppercase tracking-wide">Tags (comma separated)</label>
+                  <label className="text-xs font-bold text-smoke uppercase tracking-wide">Tags (comma separated)</label>
                   <input
                     type="text"
                     name="tags"
                     value={formFields.tags}
                     onChange={handleInputChange}
                     placeholder="headphones, wireless, audio, electronics"
-                    className="w-full px-4 py-2.5 rounded-xl bg-surface-50 dark:bg-surface-850 border border-surface-200 dark:border-surface-800 text-sm text-surface-900 dark:text-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    className="input-field w-full text-sm"
                   />
-                  <p className="text-[10px] text-surface-400">Search keywords separated by a comma.</p>
+                  <p className="text-[10px] text-smoke">Search keywords separated by a comma.</p>
                 </div>
 
-                <div className="flex gap-6 pt-2 border-t border-surface-100 dark:border-surface-850">
+                <div className="flex gap-6 pt-4 border-t border-white/5">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
                       name="isFeatured"
                       checked={formFields.isFeatured}
                       onChange={handleInputChange}
-                      className="h-4 w-4 rounded bg-surface-50 text-primary-600 border-surface-200 focus:ring-primary-500 focus:ring-offset-0"
+                      className="h-4 w-4 rounded bg-white/5 border-white/10 text-electric focus:ring-electric focus:ring-offset-0"
                     />
-                    <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Set as Featured</span>
+                    <span className="text-sm font-semibold text-frost">Set as Featured</span>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -498,24 +498,24 @@ export default function Products() {
                       name="isTrending"
                       checked={formFields.isTrending}
                       onChange={handleInputChange}
-                      className="h-4 w-4 rounded bg-surface-50 text-primary-600 border-surface-200 focus:ring-primary-500 focus:ring-offset-0"
+                      className="h-4 w-4 rounded bg-white/5 border-white/10 text-electric focus:ring-electric focus:ring-offset-0"
                     />
-                    <span className="text-sm font-semibold text-surface-700 dark:text-surface-300">Set as Trending</span>
+                    <span className="text-sm font-semibold text-frost">Set as Trending</span>
                   </label>
                 </div>
 
-                <div className="pt-6 border-t border-surface-100 dark:border-surface-800 flex justify-end gap-3 bg-surface-50/10">
+                <div className="pt-6 border-t border-white/5 flex justify-end gap-3 bg-white/2 -mx-6 -mb-6 p-6">
                   <button
                     type="button"
                     onClick={() => setIsModalOpen(false)}
-                    className="btn-secondary text-sm px-5 py-2.5 font-semibold"
+                    className="btn-secondary text-sm px-5 py-2.5 font-semibold rounded-xl"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="btn-primary text-sm px-5 py-2.5 font-semibold gap-2"
+                    className="btn-primary text-sm px-5 py-2.5 font-semibold gap-2 rounded-xl"
                   >
                     {submitting ? <Spinner size="sm" /> : 'Save Product'}
                   </button>
