@@ -21,6 +21,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
+import Logo from '../common/Logo';
 
 export default function Navbar() {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -106,10 +107,7 @@ export default function Navbar() {
         <nav className="container-custom h-16 flex items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className="h-8 w-8 rounded-lg flex items-center justify-center relative overflow-hidden"
-                 style={{ background: 'linear-gradient(135deg, #00D4FF, #A855F7)' }}>
-              <span className="text-obsidian font-black text-sm relative z-10">S</span>
-            </div>
+            <Logo className="h-8 w-8" />
             <span className="text-xl font-bold tracking-tight hidden sm:block">
               <span className="text-frost dark:text-frost">Shop</span>
               <span className="text-gradient">Sphere</span>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Instagram, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import Logo from '../common/Logo';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -46,10 +47,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
             <Link to="/" className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-lg flex items-center justify-center"
-                   style={{ background: 'linear-gradient(135deg, #00D4FF, #A855F7)' }}>
-                <span className="text-obsidian font-black text-sm">S</span>
-              </div>
+              <Logo className="h-9 w-9" />
               <span className="text-xl font-bold text-frost">
                 Shop<span className="text-gradient">Sphere</span>
               </span>
