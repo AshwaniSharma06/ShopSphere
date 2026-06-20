@@ -158,12 +158,16 @@ export default function ChatWidget() {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-14 w-14 rounded-full bg-gradient-to-tr from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 focus:outline-none relative"
+        className="h-14 w-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105 active:scale-95 focus:outline-none relative"
+        style={{
+          background: 'linear-gradient(135deg, #00D4FF, #A855F7)',
+          boxShadow: isOpen ? '0 0 15px rgba(168,85,247,0.4)' : '0 0 25px rgba(0,212,255,0.4)'
+        }}
         aria-label="Toggle chat widget"
       >
-        {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+        {isOpen ? <X className="h-6 w-6 text-obsidian" /> : <MessageSquare className="h-6 w-6 text-obsidian" />}
         {!isOpen && unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white font-bold text-[10px] h-5 w-5 rounded-full flex items-center justify-center animate-bounce shadow-md">
+          <span className="absolute -top-1 -right-1 bg-plasma text-obsidian font-bold text-[10px] h-5 w-5 rounded-full flex items-center justify-center animate-bounce shadow-md">
             {unreadCount}
           </span>
         )}
@@ -177,39 +181,39 @@ export default function ChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute bottom-18 right-0 w-[350px] sm:w-[380px] h-[500px] bg-white dark:bg-surface-900 rounded-2xl shadow-2xl border border-surface-200/60 dark:border-surface-800/60 flex flex-col overflow-hidden glass-card z-50"
+            className="absolute bottom-18 right-0 w-[350px] sm:w-[380px] h-[500px] rounded-2xl flex flex-col overflow-hidden glass-card z-50 border border-white/[0.08] shadow-glow-sm"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white flex items-center justify-between shadow-sm">
+            <div className="p-4 bg-white/5 border-b border-white/[0.08] text-frost flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-2.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-400 animate-pulse" />
+                <div className="h-2.5 w-2.5 rounded-full bg-plasma animate-pulse" />
                 <div>
                   <h4 className="font-bold text-sm">ShopSphere Support</h4>
-                  <p className="text-[10px] text-primary-100 font-semibold uppercase tracking-wider">Online / Active</p>
+                  <p className="text-[10px] text-plasma-bright font-semibold uppercase tracking-wider">Online / Active</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-white/10 text-white transition-colors"
+                className="p-1.5 rounded-lg hover:bg-white/10 text-smoke hover:text-frost transition-colors"
               >
                 <X className="h-4.5 w-4.5" />
               </button>
             </div>
 
             {/* Chat Body */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-surface-50/50 dark:bg-surface-950/20 scrollbar-thin">
+            <div className="flex-1 p-4 overflow-y-auto space-y-3 bg-white/1 scrollbar-thin">
               {loadingHistory ? (
-                <div className="h-full flex items-center justify-center flex-col space-y-2 text-surface-400">
-                  <RefreshCw className="h-5 w-5 animate-spin text-primary-500" />
+                <div className="h-full flex items-center justify-center flex-col space-y-2 text-smoke">
+                  <RefreshCw className="h-5 w-5 animate-spin text-electric" />
                   <span className="text-xs font-medium">Connecting chat logs...</span>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2">
-                  <div className="h-12 w-12 rounded-2xl bg-primary-500/10 flex items-center justify-center text-primary-500">
+                  <div className="h-12 w-12 rounded-2xl bg-electric/10 flex items-center justify-center text-electric">
                     <MessageSquare className="h-6 w-6" />
                   </div>
-                  <h5 className="text-xs font-bold text-surface-700 dark:text-surface-300 uppercase tracking-wider">How can we help?</h5>
-                  <p className="text-[11px] text-surface-400 leading-relaxed max-w-[200px]">
+                  <h5 className="text-xs font-bold text-frost uppercase tracking-wider">How can we help?</h5>
+                  <p className="text-[11px] text-smoke leading-relaxed max-w-[200px]">
                     Welcome! Drop us a line below to start chatting with our customer support team in real-time.
                   </p>
                 </div>
@@ -223,16 +227,16 @@ export default function ChatWidget() {
                     >
                       <div className={`max-w-[75%] rounded-2xl p-3 text-xs leading-relaxed ${
                         isMe
-                          ? 'bg-primary-600 text-white rounded-tr-none shadow-sm'
-                          : 'bg-white dark:bg-surface-850 text-surface-800 dark:text-surface-150 border border-surface-200/50 dark:border-surface-800/50 rounded-tl-none shadow-sm'
+                          ? 'bg-electric/10 border border-electric/20 text-frost rounded-tr-none shadow-sm'
+                          : 'bg-white/5 border border-white/10 text-frost rounded-tl-none shadow-sm'
                       }`}>
                         {!isMe && (
-                          <span className="block text-[8px] font-bold text-primary-500 dark:text-primary-400 uppercase tracking-wide mb-1">
+                          <span className="block text-[8px] font-bold text-neon uppercase tracking-wide mb-1">
                             {msg.senderName} (Support)
                           </span>
                         )}
                         <p>{msg.message}</p>
-                        <span className={`block text-[8px] mt-1 text-right ${isMe ? 'text-primary-200' : 'text-surface-400'}`}>
+                        <span className={`block text-[8px] mt-1 text-right ${isMe ? 'text-frost/40' : 'text-smoke/40'}`}>
                           {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
@@ -244,11 +248,11 @@ export default function ChatWidget() {
               {/* Live typing indicator */}
               {isAdminTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white dark:bg-surface-850 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl rounded-tl-none p-3 shadow-sm flex items-center gap-1">
-                    <span className="text-[8px] font-bold text-primary-500 uppercase tracking-wider mr-1">Admin typing</span>
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none p-3 shadow-sm flex items-center gap-1">
+                    <span className="text-[8px] font-bold text-neon uppercase tracking-wider mr-1">Admin typing</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-neon animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-neon animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="h-1.5 w-1.5 rounded-full bg-neon animate-bounce" style={{ animationDelay: '300ms' }} />
                   </div>
                 </div>
               )}
@@ -259,14 +263,14 @@ export default function ChatWidget() {
             {/* Input Composer Footer */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 bg-white dark:bg-surface-900 border-t border-surface-200/60 dark:border-surface-800/60 flex items-center gap-2"
+              className="p-3 bg-white/3 border-t border-white/[0.08] flex items-center gap-2"
             >
               <input
                 type="text"
                 value={inputText}
                 onChange={handleInputChange}
                 placeholder="Type your message..."
-                className="flex-1 text-xs input-field py-2 bg-surface-50 dark:bg-surface-950 focus:ring-1 border-0"
+                className="flex-1 text-xs input-field py-2"
               />
               <button
                 type="submit"

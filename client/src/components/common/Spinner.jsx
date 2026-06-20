@@ -28,3 +28,11 @@ export default function Spinner({ size = 'md', className = '' }) {
     </div>
   );
 }
+
+export function PageSpinner() {
+  return (
+    <div className="min-h-[70vh] w-full flex items-center justify-center">
+      <Spinner size="lg" />
+    </div>
+  );
+}

@@ -7,7 +7,7 @@ import { formatCurrency } from '../../utils/format';
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
-      color: '#1e293b', // slate-800
+      color: '#E2E8F0', // text-frost / slate-200
       fontFamily: 'Inter, sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '14px',
@@ -108,19 +108,19 @@ export default function StripeCardForm({
   };
 
   return (
-    <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-4">
-      <h3 className="text-sm font-bold text-surface-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-        <ShieldCheck className="h-4.5 w-4.5 text-primary-500" /> Secure Payment Gateway
+    <div className="glass-card p-5 space-y-4">
+      <h3 className="text-sm font-bold text-frost uppercase tracking-wider flex items-center gap-1.5">
+        <ShieldCheck className="h-4.5 w-4.5 text-electric" /> Secure Payment Gateway
       </h3>
 
       {isSimulated && (
-        <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[10px] text-amber-800 dark:text-amber-300 font-bold uppercase tracking-wider text-center">
+        <div className="p-3 bg-amber/10 border border-amber/20 rounded-xl text-[10px] text-amber-bright font-bold uppercase tracking-wider text-center">
           ⚠️ Stripe Simulator Mode Active
         </div>
       )}
 
       {cardError && (
-        <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 font-semibold text-xs rounded-xl">
+        <div className="p-3 bg-crimson/10 border border-crimson/20 text-crimson-bright font-semibold text-xs rounded-xl">
           {cardError}
         </div>
       )}
@@ -134,14 +134,14 @@ export default function StripeCardForm({
               placeholder="Card Number"
               value={mockCard.number}
               onChange={(e) => setMockCard({ ...mockCard, number: e.target.value })}
-              className="input-field text-xs py-2 bg-surface-50 dark:bg-surface-850"
+              className="input-field text-xs py-2"
             />
             <input
               type="text"
               placeholder="Cardholder Name"
               value={mockCard.holder}
               onChange={(e) => setMockCard({ ...mockCard, holder: e.target.value })}
-              className="input-field text-xs py-2 bg-surface-50 dark:bg-surface-850"
+              className="input-field text-xs py-2"
             />
             <div className="grid grid-cols-2 gap-3">
               <input
@@ -149,20 +149,20 @@ export default function StripeCardForm({
                 placeholder="Expiry (MM/YY)"
                 value={mockCard.expiry}
                 onChange={(e) => setMockCard({ ...mockCard, expiry: e.target.value })}
-                className="input-field text-xs py-2 bg-surface-50 dark:bg-surface-850"
+                className="input-field text-xs py-2"
               />
               <input
                 type="password"
                 placeholder="CVV"
                 value={mockCard.cvv}
                 onChange={(e) => setMockCard({ ...mockCard, cvv: e.target.value })}
-                className="input-field text-xs py-2 bg-surface-50 dark:bg-surface-850"
+                className="input-field text-xs py-2"
               />
             </div>
           </div>
         ) : (
           // Production Stripe CardElement
-          <div className="p-4 rounded-xl border border-surface-200 dark:border-surface-800 bg-surface-50/50 dark:bg-surface-950/40">
+          <div className="p-4 rounded-xl border border-white/5 bg-white/3">
             <CardElement options={CARD_ELEMENT_OPTIONS} />
           </div>
         )}
