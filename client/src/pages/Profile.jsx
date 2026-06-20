@@ -51,35 +51,35 @@ export default function Profile() {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-2xl mx-auto"
       >
-        <h1 className="text-2xl font-bold text-surface-900 dark:text-white mb-6">
+        <h1 className="text-2xl font-bold text-frost mb-6">
           My Profile
         </h1>
 
         <div className="glass-card p-6 sm:p-8">
           {/* Avatar & Info */}
-          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-surface-100 dark:border-surface-800">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center shadow-glow">
-              <span className="text-2xl font-bold text-white">
+          <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/5">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-electric to-neon flex items-center justify-center shadow-glow">
+              <span className="text-2xl font-bold text-obsidian">
                 {user?.name?.charAt(0).toUpperCase()}
               </span>
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-surface-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-frost">
                 {user?.name}
               </h2>
-              <p className="text-sm text-surface-500 dark:text-surface-400">{user?.email}</p>
+              <p className="text-sm text-smoke">{user?.email}</p>
               <span className="badge-primary mt-1 capitalize">{user?.role}</span>
             </div>
           </div>
 
           {/* Alerts */}
           {success && (
-            <div className="mb-6 p-3 rounded-xl bg-success-light dark:bg-green-900/20 text-success-dark dark:text-green-400 text-sm font-medium text-center">
+            <div className="mb-6 p-3 rounded-xl bg-plasma/10 border border-plasma/20 text-plasma-bright text-sm font-medium text-center">
               {success}
             </div>
           )}
           {error && (
-            <div className="mb-6 p-3 rounded-xl bg-danger-light dark:bg-red-900/20 text-danger dark:text-red-400 text-sm font-medium text-center">
+            <div className="mb-6 p-3 rounded-xl bg-crimson/10 border border-crimson/20 text-crimson-bright text-sm font-medium text-center">
               {error}
             </div>
           )}

@@ -9,14 +9,14 @@ export default function ProductGrid({ products, loading, emptyMessage }) {
 
   if (!products || products.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-4 card border border-surface-200/50 dark:border-surface-800/50 text-center rounded-2xl glass-card">
-        <div className="h-16 w-16 bg-surface-100 dark:bg-surface-800 text-surface-400 dark:text-surface-650 rounded-2xl flex items-center justify-center mb-5">
+      <div className="flex flex-col items-center justify-center py-20 px-4 card text-center rounded-2xl">
+        <div className="h-16 w-16 bg-white/5 text-smoke rounded-2xl flex items-center justify-center mb-5 border border-white/10">
           <ShoppingBag className="h-8 w-8" />
         </div>
-        <h3 className="text-xl font-bold text-surface-900 dark:text-white mb-2">
+        <h3 className="text-xl font-bold text-frost mb-2">
           No Products Found
         </h3>
-        <p className="text-surface-500 dark:text-surface-400 max-w-sm">
+        <p className="text-smoke max-w-sm text-sm">
           {emptyMessage || "We couldn't find any products matching your search criteria. Try removing some filters or search for something else."}
         </p>
       </div>

@@ -157,11 +157,11 @@ export default function Checkout() {
       <div className="max-w-3xl mx-auto mb-10">
         <div className="flex justify-between items-center relative">
           {/* Background Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-surface-200 dark:bg-surface-800 -translate-y-1/2 z-0" />
+          <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-white/5 -translate-y-1/2 z-0" />
           
           {/* Active indicator bar */}
           <div 
-            className="absolute top-1/2 left-0 h-0.5 bg-primary-600 transition-all duration-300 -translate-y-1/2 z-0"
+            className="absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-electric to-neon transition-all duration-500 -translate-y-1/2 z-0"
             style={{ width: `${((step - 1) / 2) * 100}%` }}
           />
 
@@ -178,15 +178,15 @@ export default function Checkout() {
                 <div 
                   className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm border-2 transition-all duration-300 ${
                     isCurrent 
-                      ? 'bg-primary-600 text-white border-primary-600 scale-110 shadow-glow' 
+                      ? 'bg-electric text-obsidian border-electric scale-110 shadow-glow' 
                       : isActive 
-                        ? 'bg-primary-50 dark:bg-primary-950 text-primary-600 border-primary-600'
-                        : 'bg-white dark:bg-surface-900 text-surface-400 border-surface-250 dark:border-surface-800'
+                        ? 'bg-electric/10 text-electric border-electric/50'
+                        : 'bg-onyx text-smoke border-white/10'
                   }`}
                 >
-                  {isActive && step > s.num ? <CheckCircle className="h-5 w-5 fill-current" /> : <Icon className="h-4.5 w-4.5" />}
+                  {isActive && step > s.num ? <CheckCircle className="h-5 w-5 fill-current" /> : <Icon className="h-[18px] w-[18px]" />}
                 </div>
-                <span className={`text-xs font-bold mt-2.5 ${isActive ? 'text-surface-900 dark:text-white' : 'text-surface-400'}`}>
+                <span className={`text-xs font-bold mt-2.5 ${isActive ? 'text-frost' : 'text-smoke'}`}>
                   {s.label}
                 </span>
               </div>
@@ -206,17 +206,17 @@ export default function Checkout() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 15 }}
                 transition={{ duration: 0.25 }}
-                className="card p-6 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-6"
+                className="card p-6 space-y-6"
               >
                 <div>
-                  <h2 className="text-xl font-bold text-surface-900 dark:text-white">Shipping Address</h2>
-                  <p className="text-xs text-surface-500 mt-1">Specify where your items should be delivered</p>
+                  <h2 className="text-xl font-bold text-frost">Shipping Address</h2>
+                  <p className="text-xs text-smoke mt-1">Specify where your items should be delivered</p>
                 </div>
 
                 {/* Existing addresses checklist */}
                 {user?.addresses && user.addresses.length > 0 && !showNewAddressForm && (
                   <div className="space-y-4">
-                    <label className="block text-xs font-bold text-surface-500 uppercase tracking-wide">
+                    <label className="block text-xs font-bold text-smoke uppercase tracking-widest">
                       Select Delivery Address
                     </label>
                     <div className="grid grid-cols-1 gap-3.5">
@@ -226,22 +226,22 @@ export default function Checkout() {
                           onClick={() => setSelectedAddressIndex(idx)}
                           className={`p-4 border rounded-xl cursor-pointer flex items-start gap-3.5 transition-all ${
                             selectedAddressIndex === idx
-                              ? 'border-primary-500 bg-primary-50/10 dark:bg-primary-950/10'
-                              : 'border-surface-200 dark:border-surface-800 hover:border-surface-300'
+                              ? 'border-electric/50 bg-electric/5 shadow-glow-blue-sm'
+                              : 'border-white/10 hover:border-white/20'
                           }`}
                         >
                           <input
                             type="radio"
                             checked={selectedAddressIndex === idx}
                             onChange={() => setSelectedAddressIndex(idx)}
-                            className="mt-1 accent-primary-600"
+                            className="mt-1 accent-electric"
                           />
                           <div className="text-sm">
-                            <p className="font-bold text-surface-800 dark:text-surface-100 flex items-center gap-1.5">
-                              <MapPin className="h-3.5 w-3.5 text-primary-500" />
-                              Address #{idx + 1} {addr.isDefault && <span className="badge-primary px-1.5 py-0.5 text-[9px] rounded-md uppercase tracking-wide">Default</span>}
+                            <p className="font-bold text-frost flex items-center gap-1.5">
+                              <MapPin className="h-3.5 w-3.5 text-electric" />
+                              Address #{idx + 1} {addr.isDefault && <span className="badge-primary px-1.5 py-0.5 text-[9px] rounded-md">Default</span>}
                             </p>
-                            <p className="text-surface-500 mt-1 leading-relaxed">
+                            <p className="text-smoke mt-1 leading-relaxed">
                               {addr.address}, {addr.city}, {addr.state} - {addr.postalCode}, {addr.country}
                             </p>
                           </div>
@@ -251,7 +251,7 @@ export default function Checkout() {
 
                     <button
                       onClick={() => setShowNewAddressForm(true)}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-600 hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-electric hover:underline"
                     >
                       <Plus className="h-3.5 w-3.5" /> Add new address
                     </button>
@@ -262,7 +262,7 @@ export default function Checkout() {
                 {showNewAddressForm && (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <label className="block text-xs font-bold text-surface-500 uppercase tracking-wide">
+                      <label className="block text-xs font-bold text-smoke uppercase tracking-widest">
                         Enter Address Details
                       </label>
                       {user?.addresses && user.addresses.length > 0 && (
@@ -271,7 +271,7 @@ export default function Checkout() {
                             setShowNewAddressForm(false);
                             setShippingErrors({});
                           }}
-                          className="text-xs text-surface-450 hover:text-primary-600 hover:underline font-semibold"
+                          className="text-xs text-smoke hover:text-electric hover:underline font-semibold"
                         >
                           Use saved address
                         </button>
@@ -288,9 +288,9 @@ export default function Checkout() {
                             setNewAddress({ ...newAddress, address: e.target.value });
                             setShippingErrors({ ...shippingErrors, address: '' });
                           }}
-                          className={`input-field text-sm py-2.5 ${shippingErrors.address ? 'border-danger focus:ring-danger' : ''}`}
+                          className={`input-field text-sm py-2.5 ${shippingErrors.address ? 'border-crimson focus:border-crimson' : ''}`}
                         />
-                        {shippingErrors.address && <p className="text-[10px] text-danger font-semibold mt-1">{shippingErrors.address}</p>}
+                        {shippingErrors.address && <p className="text-[10px] text-crimson font-semibold mt-1">{shippingErrors.address}</p>}
                       </div>
 
                       <div className="grid grid-cols-2 gap-3.5">
@@ -303,9 +303,9 @@ export default function Checkout() {
                               setNewAddress({ ...newAddress, city: e.target.value });
                               setShippingErrors({ ...shippingErrors, city: '' });
                             }}
-                            className={`input-field text-sm py-2.5 ${shippingErrors.city ? 'border-danger focus:ring-danger' : ''}`}
+                            className={`input-field text-sm py-2.5 ${shippingErrors.city ? 'border-crimson focus:border-crimson' : ''}`}
                           />
-                          {shippingErrors.city && <p className="text-[10px] text-danger font-semibold mt-1">{shippingErrors.city}</p>}
+                          {shippingErrors.city && <p className="text-[10px] text-crimson font-semibold mt-1">{shippingErrors.city}</p>}
                         </div>
                         <div>
                           <input
@@ -329,9 +329,9 @@ export default function Checkout() {
                               setNewAddress({ ...newAddress, postalCode: e.target.value });
                               setShippingErrors({ ...shippingErrors, postalCode: '' });
                             }}
-                            className={`input-field text-sm py-2.5 ${shippingErrors.postalCode ? 'border-danger focus:ring-danger' : ''}`}
+                            className={`input-field text-sm py-2.5 ${shippingErrors.postalCode ? 'border-crimson focus:border-crimson' : ''}`}
                           />
-                          {shippingErrors.postalCode && <p className="text-[10px] text-danger font-semibold mt-1">{shippingErrors.postalCode}</p>}
+                          {shippingErrors.postalCode && <p className="text-[10px] text-crimson font-semibold mt-1">{shippingErrors.postalCode}</p>}
                         </div>
                         <div>
                           <input
@@ -339,18 +339,18 @@ export default function Checkout() {
                             placeholder="Country"
                             value={newAddress.country}
                             disabled
-                            className="input-field text-sm py-2.5 bg-surface-50 dark:bg-surface-950 opacity-60"
+                            className="input-field text-sm py-2.5 opacity-50"
                           />
                         </div>
                       </div>
 
                       {user && (
-                        <label className="flex items-center gap-2 text-xs font-bold text-surface-600 dark:text-surface-300 pt-1.5 cursor-pointer">
+                        <label className="flex items-center gap-2 text-xs font-bold text-mist pt-1.5 cursor-pointer">
                           <input
                             type="checkbox"
                             checked={saveToProfile}
                             onChange={(e) => setSaveToProfile(e.target.checked)}
-                            className="accent-primary-600 rounded"
+                            className="accent-electric rounded"
                           />
                           Save this address to my profile
                         </label>
@@ -374,11 +374,11 @@ export default function Checkout() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 15 }}
                 transition={{ duration: 0.25 }}
-                className="card p-6 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-6"
+                className="card p-6 space-y-6"
               >
                 <div>
-                  <h2 className="text-xl font-bold text-surface-900 dark:text-white">Payment Method</h2>
-                  <p className="text-xs text-surface-500 mt-1">Choose your preferred transaction system</p>
+                  <h2 className="text-xl font-bold text-frost">Payment Method</h2>
+                  <p className="text-xs text-smoke mt-1">Choose your preferred transaction system</p>
                 </div>
 
                 {/* Tabs */}
@@ -390,12 +390,12 @@ export default function Checkout() {
                     }}
                     className={`p-4 border rounded-xl cursor-pointer text-center space-y-2.5 transition-all ${
                       paymentMethod === 'Card'
-                        ? 'border-primary-500 bg-primary-50/10 dark:bg-primary-950/10 font-bold'
-                        : 'border-surface-200 dark:border-surface-800 hover:border-surface-300'
+                        ? 'border-electric/50 bg-electric/5 shadow-glow-blue-sm font-bold'
+                        : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <CreditCard className="h-6 w-6 mx-auto text-primary-500" />
-                    <span className="text-sm text-surface-800 dark:text-surface-150 block">Credit / Debit Card</span>
+                    <CreditCard className="h-6 w-6 mx-auto text-electric" />
+                    <span className="text-sm text-frost block">Credit / Debit Card</span>
                   </div>
                   <div
                     onClick={() => {
@@ -404,33 +404,33 @@ export default function Checkout() {
                     }}
                     className={`p-4 border rounded-xl cursor-pointer text-center space-y-2.5 transition-all ${
                       paymentMethod === 'COD'
-                        ? 'border-primary-500 bg-primary-50/10 dark:bg-primary-950/10 font-bold'
-                        : 'border-surface-200 dark:border-surface-800 hover:border-surface-300'
+                        ? 'border-electric/50 bg-electric/5 shadow-glow-blue-sm font-bold'
+                        : 'border-white/10 hover:border-white/20'
                     }`}
                   >
-                    <div className="h-6 w-6 mx-auto bg-surface-100 dark:bg-surface-800 border-2 rounded flex items-center justify-center text-[10px] font-extrabold text-surface-500">₹</div>
-                    <span className="text-sm text-surface-800 dark:text-surface-150 block">Cash on Delivery (COD)</span>
+                    <div className="h-6 w-6 mx-auto bg-white/5 border border-white/10 rounded flex items-center justify-center text-[10px] font-extrabold text-mist">₹</div>
+                    <span className="text-sm text-frost block">Cash on Delivery (COD)</span>
                   </div>
                 </div>
 
                 {/* Card input details replaced by message */}
                 {paymentMethod === 'Card' && (
-                  <div className="p-5 bg-surface-50 dark:bg-surface-950/50 border border-surface-150 dark:border-surface-800/80 rounded-2xl space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-surface-200 dark:border-surface-800">
-                      <span className="text-xs font-bold text-surface-700 dark:text-surface-300 uppercase tracking-wider">Stripe Payment Options</span>
+                  <div className="p-5 bg-white/3 border border-white/8 rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between pb-2 border-b border-white/5">
+                      <span className="text-xs font-bold text-mist uppercase tracking-wider">Stripe Payment Options</span>
                       <div className="flex gap-1">
-                        <div className="h-5 w-8 bg-surface-200 dark:bg-surface-850 rounded border border-surface-300 dark:border-surface-750 flex items-center justify-center text-[8px] font-bold">VISA</div>
-                        <div className="h-5 w-8 bg-surface-200 dark:bg-surface-850 rounded border border-surface-300 dark:border-surface-750 flex items-center justify-center text-[8px] font-bold">MC</div>
+                        <div className="h-5 w-8 bg-white/5 rounded border border-white/10 flex items-center justify-center text-[8px] font-bold text-smoke">VISA</div>
+                        <div className="h-5 w-8 bg-white/5 rounded border border-white/10 flex items-center justify-center text-[8px] font-bold text-smoke">MC</div>
                       </div>
                     </div>
-                    <p className="text-xs text-surface-500 leading-relaxed">
+                    <p className="text-xs text-smoke leading-relaxed">
                       You will process card payments securely via the Stripe Gateway on the order details page after placing your order.
                     </p>
                   </div>
                 )}
 
                 {paymentMethod === 'COD' && (
-                  <div className="p-5 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-800 dark:text-amber-300 text-xs leading-relaxed space-y-1.5">
+                  <div className="p-5 bg-amber/10 border border-amber/20 rounded-2xl text-amber-bright text-xs leading-relaxed space-y-1.5">
                     <p className="font-bold flex items-center gap-1.5">💡 Payment on Delivery Notice</p>
                     <p>You can pay in cash or via UPI when the courier agent delivers the package to your address. Please verify the order details in the next step.</p>
                   </div>
@@ -460,18 +460,18 @@ export default function Checkout() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 15 }}
                 transition={{ duration: 0.25 }}
-                className="card p-6 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-6"
+                className="card p-6 space-y-6"
               >
                 <div>
-                  <h2 className="text-xl font-bold text-surface-900 dark:text-white">Review Order</h2>
-                  <p className="text-xs text-surface-500 mt-1">Ensure everything looks correct before submitting</p>
+                  <h2 className="text-xl font-bold text-frost">Review Order</h2>
+                  <p className="text-xs text-smoke mt-1">Ensure everything looks correct before submitting</p>
                 </div>
 
                 <div className="space-y-4">
                   {/* Shipping preview */}
-                  <div className="p-4 bg-surface-50 dark:bg-surface-950/60 border border-surface-150 dark:border-surface-800/60 rounded-xl">
-                    <h4 className="text-xs font-bold text-surface-500 uppercase tracking-wide mb-1.5">Shipping Destination</h4>
-                    <p className="text-sm font-semibold text-surface-800 dark:text-surface-150">
+                  <div className="p-4 bg-white/3 border border-white/5 rounded-xl">
+                    <h4 className="text-xs font-bold text-smoke uppercase tracking-widest mb-1.5">Shipping Destination</h4>
+                    <p className="text-sm font-semibold text-frost">
                       {showNewAddressForm ? (
                         `${newAddress.address}, ${newAddress.city}, ${newAddress.state} - ${newAddress.postalCode}`
                       ) : (
@@ -484,12 +484,12 @@ export default function Checkout() {
                   </div>
 
                   {/* Payment preview */}
-                  <div className="p-4 bg-surface-50 dark:bg-surface-950/60 border border-surface-150 dark:border-surface-800/60 rounded-xl">
-                    <h4 className="text-xs font-bold text-surface-500 uppercase tracking-wide mb-1.5">Payment Selection</h4>
-                    <p className="text-sm font-semibold text-surface-800 dark:text-surface-150">
+                  <div className="p-4 bg-white/3 border border-white/5 rounded-xl">
+                    <h4 className="text-xs font-bold text-smoke uppercase tracking-widest mb-1.5">Payment Selection</h4>
+                    <p className="text-sm font-semibold text-frost">
                       {paymentMethod === 'Card' ? (
                         <span className="flex items-center gap-1.5">
-                          <CreditCard className="h-4 w-4 text-primary-500" />
+                          <CreditCard className="h-4 w-4 text-electric" />
                           Credit / Debit Card (via Stripe)
                         </span>
                       ) : (
@@ -522,8 +522,8 @@ export default function Checkout() {
 
         {/* Right Side: Order summary layout */}
         <div className="lg:col-span-4">
-          <div className="card p-5 border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm space-y-5 sticky top-24 glass-card">
-            <h3 className="text-base font-bold text-surface-900 dark:text-white">
+          <div className="glass-card p-5 space-y-5 sticky top-24">
+            <h3 className="text-base font-bold text-frost">
               Order Items ({cart.reduce((sum, x) => sum + x.quantity, 0)})
             </h3>
 
@@ -535,45 +535,45 @@ export default function Checkout() {
                 return (
                   <div key={item.product._id} className="flex gap-3 items-center justify-between text-xs">
                     <div className="flex gap-2.5 items-center min-w-0">
-                      <div className="h-10 w-10 bg-surface-50 dark:bg-surface-950 p-0.5 rounded border border-surface-150 dark:border-surface-850 shrink-0">
+                      <div className="h-10 w-10 bg-white/3 p-0.5 rounded border border-white/10 shrink-0">
                         <img src={item.product.images?.[0]} alt="" className="h-full w-full object-contain rounded" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-surface-800 dark:text-surface-200 truncate">{item.product.title}</p>
-                        <p className="text-surface-450 mt-0.5">{item.quantity} x {formatCurrency(price)}</p>
+                        <p className="font-bold text-frost truncate">{item.product.title}</p>
+                        <p className="text-smoke mt-0.5">{item.quantity} x {formatCurrency(price)}</p>
                       </div>
                     </div>
-                    <span className="font-bold shrink-0 text-surface-800 dark:text-surface-150">{formatCurrency(price * item.quantity)}</span>
+                    <span className="font-bold shrink-0 text-frost">{formatCurrency(price * item.quantity)}</span>
                   </div>
                 );
               })}
             </div>
 
-            <hr className="border-surface-200 dark:border-surface-800/80" />
+            <div className="border-t border-white/5" />
 
             {/* Calculations block */}
             <div className="space-y-2.5 text-xs">
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>Items Subtotal</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-250">{formatCurrency(cartTotal)}</span>
+                <span className="font-semibold text-frost">{formatCurrency(cartTotal)}</span>
               </div>
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>Shipping Fee</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-250">
-                  {shippingPrice === 0 ? <span className="text-success uppercase font-bold text-[10px]">Free</span> : formatCurrency(shippingPrice)}
+                <span className="font-semibold text-frost">
+                  {shippingPrice === 0 ? <span className="text-plasma uppercase font-bold text-[10px]">Free</span> : formatCurrency(shippingPrice)}
                 </span>
               </div>
-              <div className="flex justify-between text-surface-500">
+              <div className="flex justify-between text-smoke">
                 <span>GST (18%)</span>
-                <span className="font-semibold text-surface-800 dark:text-surface-250">{formatCurrency(taxPrice)}</span>
+                <span className="font-semibold text-frost">{formatCurrency(taxPrice)}</span>
               </div>
             </div>
 
-            <hr className="border-surface-200 dark:border-surface-800/80" />
+            <div className="border-t border-white/5" />
 
             <div className="flex justify-between items-baseline pt-1">
-              <span className="text-sm font-bold text-surface-900 dark:text-white">Amount Pay</span>
-              <span className="text-lg font-extrabold text-primary-600 dark:text-primary-400">{formatCurrency(totalPrice)}</span>
+              <span className="text-sm font-bold text-frost">Amount Pay</span>
+              <span className="text-lg font-extrabold text-electric">{formatCurrency(totalPrice)}</span>
             </div>
           </div>
         </div>

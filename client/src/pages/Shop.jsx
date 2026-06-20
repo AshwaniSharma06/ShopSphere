@@ -173,15 +173,21 @@ export default function Shop() {
       {/* Title Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-surface-900 dark:text-white tracking-tight">
+          <h1 className="text-3xl font-extrabold text-frost tracking-tight">
             Discover Products
           </h1>
-          <p className="text-surface-500 dark:text-surface-400 text-sm mt-1">
+          <p className="text-smoke text-sm mt-1">
             Browse through our curated collection of premium products
           </p>
         </div>
-        <div className="text-sm font-semibold text-surface-500 dark:text-surface-450 bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 px-4 py-2.5 rounded-xl shadow-sm self-start">
-          Showing <span className="text-primary-600 dark:text-primary-400">{products.length}</span> of {totalProducts} items
+        <div
+          className="text-sm font-semibold text-smoke px-4 py-2.5 rounded-xl self-start"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          Showing <span className="text-electric">{products.length}</span> of {totalProducts} items
         </div>
       </div>
 
@@ -200,21 +206,21 @@ export default function Shop() {
           {/* Mobile Filter Toggle */}
           <button
             onClick={() => setMobileFiltersOpen(true)}
-            className="md:hidden flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 text-surface-700 dark:text-surface-300 rounded-xl hover:bg-surface-50 text-sm font-medium transition-all"
+            className="md:hidden btn-secondary gap-2 px-4 py-3 text-sm font-medium"
           >
             <SlidersHorizontal className="h-4 w-4" /> Filters
           </button>
 
           {/* Sort Dropdown */}
           <div className="relative flex-1 md:flex-initial flex items-center gap-2">
-            <span className="hidden sm:inline text-xs font-semibold text-surface-450 uppercase tracking-wider">
+            <span className="hidden sm:inline text-xs font-bold text-mist uppercase tracking-wider">
               Sort By:
             </span>
             <div className="relative flex-grow">
               <select
                 value={sortVal}
                 onChange={(e) => updateQueryParam('sort', e.target.value)}
-                className="w-full pl-4 pr-10 py-3 rounded-xl border border-surface-200 dark:border-surface-800 bg-white dark:bg-surface-900 text-sm font-medium text-surface-700 dark:text-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all appearance-none cursor-pointer"
+                className="input-field w-full pl-4 pr-10 py-3 rounded-xl text-sm font-medium appearance-none cursor-pointer"
               >
                 <option value="newest">Newest Arrivals</option>
                 <option value="price_asc">Price: Low to High</option>
@@ -223,7 +229,7 @@ export default function Shop() {
                 <option value="name_asc">Name: A to Z</option>
                 <option value="name_desc">Name: Z to A</option>
               </select>
-              <ArrowUpDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-surface-400 pointer-events-none" />
+              <ArrowUpDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-smoke pointer-events-none" />
             </div>
           </div>
         </div>
@@ -231,7 +237,13 @@ export default function Shop() {
 
       <div className="flex gap-8 items-start">
         {/* Left Filter Sidebar (Desktop only) */}
-        <aside className="hidden md:block w-64 shrink-0 bg-white dark:bg-surface-900 border border-surface-200/50 dark:border-surface-800/50 rounded-2xl p-6 shadow-sm sticky top-20">
+        <aside
+          className="hidden md:block w-64 shrink-0 rounded-2xl p-6 sticky top-20"
+          style={{
+            background: '#111111',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+        >
           <ProductFilters
             categories={categories}
             selectedCategory={categoryVal}
@@ -256,11 +268,15 @@ export default function Shop() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && !loading && (
-            <div className="flex items-center justify-center gap-2 pt-6 border-t border-surface-200/50 dark:border-surface-800/50">
+            <div
+              className="flex items-center justify-center gap-2 pt-6"
+              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
+            >
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="p-2.5 rounded-xl border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-850 text-surface-600 dark:text-surface-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="p-2.5 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed text-smoke hover:text-frost hover:bg-white/[0.05]"
+                style={{ border: '1px solid rgba(255,255,255,0.08)' }}
                 aria-label="Previous Page"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -275,9 +291,17 @@ export default function Shop() {
                       onClick={() => handlePageChange(pageNumber)}
                       className={`h-10 w-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-all ${
                         currentPage === pageNumber
-                          ? 'bg-primary-600 text-white shadow-glow'
-                          : 'border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-850 text-surface-700 dark:text-surface-300'
+                          ? 'text-obsidian font-bold'
+                          : 'text-mist hover:text-frost hover:bg-white/[0.05]'
                       }`}
+                      style={
+                        currentPage === pageNumber
+                          ? {
+                              background: 'linear-gradient(135deg, #00D4FF, #00A3CC)',
+                              boxShadow: '0 0 20px rgba(0,212,255,0.3)',
+                            }
+                          : { border: '1px solid rgba(255,255,255,0.08)' }
+                      }
                     >
                       {pageNumber}
                     </button>
@@ -288,7 +312,8 @@ export default function Shop() {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2.5 rounded-xl border border-surface-200 dark:border-surface-800 hover:bg-surface-50 dark:hover:bg-surface-850 text-surface-600 dark:text-surface-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="p-2.5 rounded-xl transition-all disabled:opacity-30 disabled:cursor-not-allowed text-smoke hover:text-frost hover:bg-white/[0.05]"
+                style={{ border: '1px solid rgba(255,255,255,0.08)' }}
                 aria-label="Next Page"
               >
                 <ChevronRight className="h-5 w-5" />
@@ -305,10 +330,10 @@ export default function Shop() {
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileFiltersOpen(false)}
-              className="fixed inset-0 bg-black z-50 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 md:hidden"
             />
             {/* Drawer */}
             <motion.div
@@ -316,15 +341,20 @@ export default function Shop() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'tween', duration: 0.3 }}
-              className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-surface-900 shadow-xl border-r border-surface-200 dark:border-surface-800 p-6 z-50 overflow-y-auto md:hidden"
+              className="fixed inset-y-0 left-0 max-w-xs w-full shadow-glass-lg p-6 z-50 overflow-y-auto md:hidden"
+              style={{
+                background: 'rgba(17,17,17,0.97)',
+                backdropFilter: 'blur(20px)',
+                borderRight: '1px solid rgba(255,255,255,0.06)',
+              }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold text-surface-900 dark:text-white">
+                <h2 className="text-lg font-bold text-frost">
                   Filter Products
                 </h2>
                 <button
                   onClick={() => setMobileFiltersOpen(false)}
-                  className="p-1.5 rounded-lg text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                  className="p-1.5 rounded-lg text-smoke hover:text-frost hover:bg-white/[0.05] transition-colors"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -360,7 +390,7 @@ export default function Shop() {
                 if (speechRecognition) speechRecognition.stop();
                 setVoiceError(null);
               }}
-              className="absolute inset-0 bg-surface-950/70 backdrop-blur-md"
+              className="absolute inset-0 bg-black/70 backdrop-blur-md"
             />
 
             {/* Overlay Box */}
@@ -368,7 +398,7 @@ export default function Shop() {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-md bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-800 rounded-3xl p-8 text-center shadow-xl m-4 z-10 space-y-6"
+              className="relative w-full max-w-md glass-3 rounded-3xl p-8 text-center shadow-glass-lg m-4 z-10 space-y-6"
             >
               {/* Close Button */}
               <button
@@ -376,7 +406,7 @@ export default function Shop() {
                   if (speechRecognition) speechRecognition.stop();
                   setVoiceError(null);
                 }}
-                className="absolute top-4 right-4 p-2 rounded-xl text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+                className="absolute top-4 right-4 p-2 rounded-xl text-smoke hover:text-frost hover:bg-white/[0.05] transition-colors"
                 aria-label="Close"
               >
                 <X className="h-5 w-5" />
@@ -385,12 +415,15 @@ export default function Shop() {
               {voiceError ? (
                 // Error State
                 <div className="space-y-6">
-                  <div className="h-16 w-16 mx-auto rounded-full bg-red-100 dark:bg-red-950/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                    <AlertCircle className="h-8 w-8" />
+                  <div
+                    className="h-16 w-16 mx-auto rounded-full flex items-center justify-center"
+                    style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.2)' }}
+                  >
+                    <AlertCircle className="h-8 w-8 text-crimson-bright" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-surface-900 dark:text-white">Voice Search Failed</h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-400 leading-relaxed">
+                    <h3 className="text-lg font-bold text-frost">Voice Search Failed</h3>
+                    <p className="text-sm text-smoke leading-relaxed">
                       {voiceError}
                     </p>
                   </div>
@@ -420,27 +453,41 @@ export default function Shop() {
                     <motion.div
                       animate={{ scale: [1, 1.4, 1] }}
                       transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
-                      className="absolute inset-0 rounded-full bg-primary-500/20 dark:bg-primary-500/10"
+                      className="absolute inset-0 rounded-full"
+                      style={{ background: 'rgba(0,212,255,0.1)' }}
                     />
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
-                      className="absolute inset-2 rounded-full bg-primary-500/30 dark:bg-primary-500/20"
+                      className="absolute inset-2 rounded-full"
+                      style={{ background: 'rgba(0,212,255,0.15)' }}
                     />
-                    <div className="relative h-16 w-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-500/20">
+                    <div
+                      className="relative h-16 w-16 rounded-full flex items-center justify-center text-obsidian"
+                      style={{
+                        background: 'linear-gradient(135deg, #00D4FF, #00A3CC)',
+                        boxShadow: '0 0 30px rgba(0,212,255,0.3)',
+                      }}
+                    >
                       <Mic className="h-7 w-7 animate-pulse-soft" />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <h3 className="text-xl font-extrabold text-surface-900 dark:text-white tracking-tight">Listening for Search...</h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-400">
+                    <h3 className="text-xl font-extrabold text-frost tracking-tight">Listening for Search...</h3>
+                    <p className="text-sm text-smoke">
                       Please speak clearly into your microphone
                     </p>
                   </div>
 
-                  <div className="p-4 bg-surface-50 dark:bg-surface-850 rounded-2xl border border-surface-100 dark:border-surface-800 text-xs text-surface-450 space-y-2">
-                    <p className="font-bold text-surface-500 dark:text-surface-450 uppercase tracking-wider">Example Queries</p>
+                  <div
+                    className="p-4 rounded-2xl text-xs text-smoke space-y-2"
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                    }}
+                  >
+                    <p className="font-bold text-mist uppercase tracking-wider">Example Queries</p>
                     <p>"headphones" • "smart watch" • "denim jacket"</p>
                   </div>
 

@@ -13,23 +13,23 @@ export default function Wishlist() {
       <div className="container-custom py-24 flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <Spinner size="lg" className="mx-auto" />
-          <p className="text-surface-500 dark:text-surface-400 font-medium">Loading your wishlist...</p>
+          <p className="text-smoke font-medium text-sm">Loading your wishlist...</p>
         </div>
       </div>
     );
   }
 
   // Set page headers for SEO
-  document.title = "My Wishlist - ShopSphere";
+  document.title = "My Wishlist — ShopSphere";
 
   return (
     <div className="container-custom py-10">
       {/* Title */}
-      <div className="border-b border-surface-200 dark:border-surface-800 pb-6 mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight text-surface-900 dark:text-white">
+      <div className="pb-6 mb-8" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <h1 className="text-3xl font-extrabold tracking-tight text-frost">
           My Wishlist
         </h1>
-        <p className="text-sm text-surface-500 dark:text-surface-400 mt-1">
+        <p className="text-sm text-smoke mt-1">
           Keep track of products you love and want to purchase later
         </p>
       </div>
@@ -41,19 +41,22 @@ export default function Wishlist() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.3 }}
-            className="max-w-md mx-auto text-center py-16 px-6 card border border-surface-200/50 dark:border-surface-800/50 bg-white dark:bg-surface-900 rounded-2xl shadow-sm glass-card"
+            className="max-w-md mx-auto text-center py-16 px-8 glass-card"
           >
-            <div className="h-16 w-16 bg-red-50 dark:bg-red-950/40 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Heart className="h-8 w-8 text-red-500" />
+            <div
+              className="h-16 w-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
+              style={{ background: 'rgba(236,72,153,0.1)', border: '1px solid rgba(236,72,153,0.15)' }}
+            >
+              <Heart className="h-8 w-8 text-cyber" />
             </div>
-            <h2 className="text-xl font-bold text-surface-900 dark:text-white">
+            <h2 className="text-xl font-bold text-frost">
               Your wishlist is empty
             </h2>
-            <p className="text-sm text-surface-500 dark:text-surface-400 mt-2 mb-8 max-w-xs mx-auto">
+            <p className="text-sm text-smoke mt-2 mb-8 max-w-xs mx-auto">
               Save your favorite items here so you can easily find and buy them later.
             </p>
             <Link to="/shop" className="btn-primary w-full gap-2">
-              <ShoppingBag className="h-4.5 w-4.5" /> Explore Products
+              <ShoppingBag className="h-4 w-4" /> Explore Products
             </Link>
           </motion.div>
         ) : (
