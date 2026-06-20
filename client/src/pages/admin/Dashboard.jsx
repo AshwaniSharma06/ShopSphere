@@ -139,7 +139,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container-custom py-8 sm:py-10 space-y-8">
+    <div className="container-custom py-8 sm:py-10 space-y-8 animate-fade-in">
       <style>{`@media print { header, footer, nav, button, .btn-primary, .btn-secondary { display: none !important; } body { background: white !important; color: #0A0A0A !important; } }`}</style>
 
       {/* Header */}
@@ -156,27 +156,27 @@ export default function Dashboard() {
             { to: '/admin/chats', label: 'Support' },
             { to: '/admin/orders', label: 'Orders' },
           ].map((link) => (
-            <Link key={link.to} to={link.to} className="btn-secondary text-xs py-2 px-3 font-semibold">{link.label}</Link>
+            <Link key={link.to} to={link.to} className="btn-secondary text-xs py-2 px-3.5 rounded-xl font-bold">{link.label}</Link>
           ))}
-          <button onClick={exportCSVReport} className="btn-primary text-xs py-2 px-3 font-semibold flex items-center gap-1.5">
+          <button onClick={exportCSVReport} className="btn-primary text-xs py-2 px-3.5 rounded-xl font-bold flex items-center gap-1.5">
             <Download className="h-3.5 w-3.5" /> Export
           </button>
-          <button onClick={() => window.print()} className="btn-secondary text-xs py-2 px-3 font-semibold flex items-center gap-1.5">
+          <button onClick={() => window.print()} className="btn-secondary text-xs py-2 px-3.5 rounded-xl font-bold flex items-center gap-1.5">
             <Printer className="h-3.5 w-3.5" /> Print
           </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 rounded-xl" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.04)' }}>
+      <div className="flex gap-1 p-1 rounded-xl bg-white/5 border border-white/10 max-w-xs">
         {tabs.map((tab) => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
               activeTab === tab.key
-                ? 'text-obsidian'
+                ? 'text-obsidian shadow-glow'
                 : 'text-smoke hover:text-frost'
             }`}
-            style={activeTab === tab.key ? { background: 'linear-gradient(135deg, #00D4FF, #00A3CC)' } : {}}>
+            style={activeTab === tab.key ? { background: 'linear-gradient(135deg, #00D4FF, #A855F7)' } : {}}>
             <tab.icon className="h-4 w-4" /> {tab.label}
           </button>
         ))}
@@ -190,7 +190,7 @@ export default function Dashboard() {
               <motion.div key={card.title}
                 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="card p-5 flex flex-col justify-between relative overflow-hidden"
+                className="glass-card p-5 flex flex-col justify-between relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 right-0 h-[2px]"
                      style={{ background: `linear-gradient(90deg, ${card.color}, transparent)` }} />
@@ -214,7 +214,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Category Revenue */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}
-              className="lg:col-span-1 card p-5 flex flex-col">
+              className="lg:col-span-1 glass-card p-5 flex flex-col">
               <div className="mb-5">
                 <h3 className="text-base font-bold text-frost flex items-center gap-2">
                   <TrendingUp className="h-4 w-4 text-electric" /> Category Revenue
@@ -235,7 +235,7 @@ export default function Dashboard() {
                           <span className="text-cloud">{cat._id}</span>
                           <span className="text-frost">{formatCurrency(cat.sales)} <span className="text-smoke font-normal">({cat.quantity})</span></span>
                         </div>
-                        <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        <div className="w-full h-1.5 rounded-full overflow-hidden bg-white/5">
                           <motion.div initial={{ width: 0 }} animate={{ width: `${pct}%` }}
                             transition={{ duration: 0.8, ease: 'easeOut' }}
                             className="h-full rounded-full"
@@ -250,7 +250,7 @@ export default function Dashboard() {
 
             {/* Recent Orders */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.1 }}
-              className="lg:col-span-2 card p-5">
+              className="lg:col-span-2 glass-card p-5">
               <div className="flex justify-between items-center mb-5">
                 <div>
                   <h3 className="text-base font-bold text-frost flex items-center gap-2">
@@ -268,7 +268,7 @@ export default function Dashboard() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                      <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider border-b border-white/10">
                         <th className="pb-3">Order</th><th className="pb-3">Customer</th><th className="pb-3">Date</th><th className="pb-3">Total</th><th className="pb-3 text-right">Status</th>
                       </tr>
                     </thead>
@@ -276,7 +276,7 @@ export default function Dashboard() {
                       {recentOrders.map((order) => {
                         const sc = statusColors[order.status] || statusColors.Pending;
                         return (
-                          <tr key={order._id} className="text-sm hover:bg-white/[0.02] transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                          <tr key={order._id} className="text-sm hover:bg-white/2 border-b border-white/5 transition-colors">
                             <td className="py-3">
                               <Link to={`/orders/${order._id}`} className="hover:text-electric font-mono text-[11px] text-mist">{order._id.slice(-8)}</Link>
                             </td>
@@ -301,7 +301,7 @@ export default function Dashboard() {
         </>
       ) : (
         /* Sellers Tab */
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="card p-5">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-5">
           <div className="flex justify-between items-center mb-5">
             <div>
               <h3 className="text-base font-bold text-frost flex items-center gap-2">
@@ -320,7 +320,7 @@ export default function Dashboard() {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <tr className="text-[10px] font-bold text-smoke uppercase tracking-wider border-b border-white/10">
                     <th className="py-3 px-3">Store</th><th className="py-3 px-3">Seller</th><th className="py-3 px-3">Phone</th>
                     <th className="py-3 px-3">Status</th><th className="py-3 px-3 text-right">Actions</th>
                   </tr>
@@ -331,9 +331,9 @@ export default function Dashboard() {
                     const logoUrl = profile.logo || 'https://images.unsplash.com/photo-1472851294608-062f824d296e?w=80';
                     const isApproved = profile.isApproved;
                     return (
-                      <tr key={vendor._id} className="text-sm hover:bg-white/[0.02] transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <tr key={vendor._id} className="text-sm hover:bg-white/2 border-b border-white/5 transition-colors">
                         <td className="py-3 px-3 flex items-center gap-3">
-                          <img src={logoUrl} alt={profile.storeName} className="h-9 w-9 rounded-lg object-cover shrink-0" style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }} />
+                          <img src={logoUrl} alt={profile.storeName} className="h-9 w-9 rounded-lg object-cover shrink-0 bg-white/5 border border-white/10" />
                           <div className="max-w-[180px]">
                             <p className="font-bold text-frost text-xs truncate">{profile.storeName || 'Unnamed'}</p>
                             <p className="text-[10px] text-smoke line-clamp-1">{profile.storeDescription || 'No description'}</p>
@@ -360,7 +360,7 @@ export default function Dashboard() {
                             </button>
                           ) : (
                             <button onClick={() => handleApproveVendor(vendor._id, true)}
-                              className="text-[11px] font-bold py-1 px-2.5 rounded-lg flex items-center gap-1 ml-auto"
+                              className="text-[11px] font-bold py-1.5 px-3 rounded-xl flex items-center gap-1 ml-auto"
                               style={{ background: 'rgba(16,185,129,0.15)', color: '#34D399', border: '1px solid rgba(16,185,129,0.25)' }}>
                               <CheckCircle className="h-3 w-3" /> Approve
                             </button>
