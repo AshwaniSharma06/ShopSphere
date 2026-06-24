@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const dotenv = require('dotenv');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
+const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const { errorHandler, notFound } = require('./middleware/errorMiddleware');
 const setupSocket = require('./socket');
@@ -66,13 +67,36 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Health Check
 app.get('/api/v1/health', (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    message: 'ShopSphere API is running',
+  const dbStatus = {
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
+  }[mongoose.connection.readyState] || 'unknown';
+
+  res.status(dbStatus === 'connected' ? 200 : 503).json({
+    status: dbStatus === 'connected' ? 'success' : 'error',
+    message: `ShopSphere API is running. Database is ${dbStatus}.`,
+    database: dbStatus,
     timestamp: new Date(),
     environment: process.env.NODE_ENV || 'development',
   });
 });
+
+// Database connection check middleware for API endpoints
+const dbCheckMiddleware = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    res.status(503);
+    return next(
+      new Error(
+        'Database connection is not established. Please configure a valid MONGO_URI in server/.env and ensure your MongoDB instance is running.'
+      )
+    );
+  }
+  next();
+};
+
+app.use('/api/v1', dbCheckMiddleware);
 
 // API Routes
 app.use('/api/v1/auth', authRoutes);
