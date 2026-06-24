@@ -164,7 +164,7 @@ export default function ProductCard({ product }) {
           </button>
 
           {/* Hover overlay with actions */}
-          <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-center gap-2 p-3 opacity-0 group-hover:opacity-100 transition-all duration-300"
+          <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-center gap-2 p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto"
                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)' }}>
             <Link
               to={`/product/${_id}`}

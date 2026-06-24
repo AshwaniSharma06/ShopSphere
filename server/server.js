@@ -66,6 +66,15 @@ app.use('/api/v1/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
+// Custom API Request/Response Logger Middleware
+app.use((req, res, next) => {
+  console.log(`🌐 [API REQUEST]: ${req.method} ${req.originalUrl}`);
+  res.on('finish', () => {
+    console.log(`🌐 [API RESPONSE]: ${req.method} ${req.originalUrl} - ${res.statusCode}`);
+  });
+  next();
+});
+
 // --------------- Routes ---------------
 
 // Health Check

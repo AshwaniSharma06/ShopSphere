@@ -24,26 +24,37 @@ export const WishlistProvider = ({ children }) => {
           // Check for guest wishlist to merge
           const localWishlistStr = localStorage.getItem('shopsphere-wishlist');
           if (localWishlistStr) {
-            const localWishlist = JSON.parse(localWishlistStr);
-            if (localWishlist.length > 0) {
-              const mergePayload = localWishlist.map((item) => item._id);
-              const data = await wishlistService.mergeWishlist(mergePayload);
-              setWishlist(data.wishlist || []);
-            } else {
+            try {
+              const localWishlist = JSON.parse(localWishlistStr) || [];
+              const validLocal = Array.isArray(localWishlist) ? localWishlist.filter(Boolean) : [];
+              if (validLocal.length > 0) {
+                const mergePayload = validLocal.map((item) => typeof item === 'string' ? item : item._id).filter(Boolean);
+                const data = await wishlistService.mergeWishlist(mergePayload);
+                setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
+              } else {
+                const data = await wishlistService.getWishlist();
+                setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
+              }
+            } catch (jsonErr) {
               const data = await wishlistService.getWishlist();
-              setWishlist(data.wishlist || []);
+              setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
             }
             // Clear local guest wishlist
             localStorage.removeItem('shopsphere-wishlist');
           } else {
             const data = await wishlistService.getWishlist();
-            setWishlist(data.wishlist || []);
+            setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
           }
         } else {
           // Guest Wishlist loading
           const localWishlistStr = localStorage.getItem('shopsphere-wishlist');
           if (localWishlistStr) {
-            setWishlist(JSON.parse(localWishlistStr));
+            try {
+              const localWishlist = JSON.parse(localWishlistStr) || [];
+              setWishlist(Array.isArray(localWishlist) ? localWishlist.filter(Boolean) : []);
+            } catch (jsonErr) {
+              setWishlist([]);
+            }
           } else {
             setWishlist([]);
           }
@@ -59,19 +70,25 @@ export const WishlistProvider = ({ children }) => {
   }, [isAuthenticated, token]);
 
   const saveGuestWishlist = (newWishlist) => {
-    setWishlist(newWishlist);
-    localStorage.setItem('shopsphere-wishlist', JSON.stringify(newWishlist));
+    const validWishlist = Array.isArray(newWishlist) ? newWishlist.filter(Boolean) : [];
+    setWishlist(validWishlist);
+    localStorage.setItem('shopsphere-wishlist', JSON.stringify(validWishlist));
   };
 
   // Add Item to Wishlist
   const addToWishlist = async (product) => {
+    if (!product || !product._id) return;
     try {
       if (isAuthenticated) {
         const data = await wishlistService.addToWishlist(product._id);
-        setWishlist(data.wishlist || []);
+        setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
       } else {
         // Guest mode
-        const exists = wishlist.some((item) => item._id === product._id);
+        const exists = wishlist.some((item) => {
+          if (!item) return false;
+          const id = typeof item === 'string' ? item : item._id;
+          return id === product._id;
+        });
         if (!exists) {
           const newWishlist = [...wishlist, product];
           saveGuestWishlist(newWishlist);
@@ -84,13 +101,18 @@ export const WishlistProvider = ({ children }) => {
 
   // Remove Item from Wishlist
   const removeFromWishlist = async (productId) => {
+    if (!productId) return;
     try {
       if (isAuthenticated) {
         const data = await wishlistService.removeFromWishlist(productId);
-        setWishlist(data.wishlist || []);
+        setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
       } else {
         // Guest mode
-        const filteredWishlist = wishlist.filter((item) => item._id !== productId);
+        const filteredWishlist = wishlist.filter((item) => {
+          if (!item) return false;
+          const id = typeof item === 'string' ? item : item._id;
+          return id !== productId;
+        });
         saveGuestWishlist(filteredWishlist);
       }
     } catch (error) {
@@ -100,13 +122,18 @@ export const WishlistProvider = ({ children }) => {
 
   // Toggle Item in Wishlist
   const toggleWishlist = async (product) => {
+    if (!product || !product._id) return;
     try {
       if (isAuthenticated) {
         const data = await wishlistService.toggleWishlist(product._id);
-        setWishlist(data.wishlist || []);
+        setWishlist(Array.isArray(data.wishlist) ? data.wishlist.filter(Boolean) : []);
       } else {
         // Guest mode
-        const exists = wishlist.some((item) => item._id === product._id);
+        const exists = wishlist.some((item) => {
+          if (!item) return false;
+          const id = typeof item === 'string' ? item : item._id;
+          return id === product._id;
+        });
         if (exists) {
           await removeFromWishlist(product._id);
         } else {
@@ -120,7 +147,12 @@ export const WishlistProvider = ({ children }) => {
 
   // Check if product is in wishlist
   const isInWishlist = (productId) => {
-    return wishlist.some((item) => item._id === productId);
+    if (!productId) return false;
+    return Array.isArray(wishlist) && wishlist.some((item) => {
+      if (!item) return false;
+      const id = typeof item === 'string' ? item : item._id;
+      return id === productId;
+    });
   };
 
   return (
