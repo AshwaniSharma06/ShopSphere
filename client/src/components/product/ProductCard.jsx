@@ -101,16 +101,19 @@ export default function ProductCard({ product }) {
         />
 
         {/* Product Image */}
-        <Link to={`/product/${_id}`} className="relative block overflow-hidden aspect-[4/3]" style={{ background: '#0A0A0A' }}>
-          <img
-            src={mainImage}
-            alt={title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-            loading="lazy"
-          />
+        {/* Product Image Area */}
+        <div className="relative overflow-hidden aspect-[4/3]" style={{ background: '#0A0A0A' }}>
+          <Link to={`/product/${_id}`} className="block w-full h-full">
+            <img
+              src={mainImage}
+              alt={title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              loading="lazy"
+            />
+          </Link>
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
             {discountPercent > 0 && (
               <span className="badge-danger px-2 py-0.5 text-[10px]">
                 {discountPercent}% OFF
@@ -169,7 +172,7 @@ export default function ProductCard({ product }) {
               </button>
             )}
           </div>
-        </Link>
+        </div>
 
         {/* Info Content */}
         <div className="p-4 flex-grow flex flex-col justify-between relative z-10">
