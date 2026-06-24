@@ -3,6 +3,7 @@
  * Catches all errors passed via next(error) and formats a consistent JSON response.
  */
 const errorHandler = (err, req, res, next) => {
+  console.error('❌ Error caught by handler:', err);
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message || 'Internal Server Error';
 

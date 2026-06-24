@@ -59,6 +59,13 @@ export default function ProductCard({ product }) {
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    fetch('/api/v1/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'click_event', action: 'add_to_cart', productId: _id, title })
+    }).catch(() => {});
+
     try {
       await addToCart(product, 1);
     } catch (err) {
@@ -103,7 +110,13 @@ export default function ProductCard({ product }) {
         {/* Product Image */}
         {/* Product Image Area */}
         <div className="relative overflow-hidden aspect-[4/3]" style={{ background: '#0A0A0A' }}>
-          <Link to={`/product/${_id}`} className="block w-full h-full">
+          <Link to={`/product/${_id}`} className="block w-full h-full" onClick={() => {
+            fetch('/api/v1/log', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ type: 'click_event', action: 'navigate_details_image', productId: _id, title })
+            }).catch(() => {});
+          }}>
             <img
               src={mainImage}
               alt={title}

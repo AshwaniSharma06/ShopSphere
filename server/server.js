@@ -86,6 +86,12 @@ app.get('/api/v1/health', (req, res) => {
   });
 });
 
+// Client logger route
+app.post('/api/v1/log', (req, res) => {
+  console.log('📡 [CLIENT LOG]:', JSON.stringify(req.body, null, 2));
+  res.sendStatus(200);
+});
+
 // Database connection check middleware for API endpoints
 const dbCheckMiddleware = (req, res, next) => {
   if (mongoose.connection.readyState !== 1) {
