@@ -19,189 +19,157 @@ const categories = [
   { name: 'Beauty', description: 'Skincare, makeup, and personal care', image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400' },
 ];
 
-const seedProducts = [
-  {
-    title: 'Wireless Bluetooth Headphones',
-    description: 'Premium noise-cancelling wireless headphones with 40-hour battery life, deep bass, and crystal-clear sound. Features adaptive ANC, transparency mode, and multipoint connectivity.',
-    price: 2999,
-    discountPercent: 15,
-    stock: 150,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['headphones', 'wireless', 'bluetooth', 'audio', 'noise-cancelling'],
-    images: [
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
-      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500',
-    ],
-    categoryName: 'Electronics',
-    rating: 4.5,
-    numReviews: 128,
-  },
-  {
-    title: 'Smart Watch Pro',
-    description: 'Advanced fitness tracker and smartwatch with AMOLED display, heart rate monitoring, GPS, sleep tracking, and 7-day battery life. Water resistant to 50m.',
-    price: 4999,
-    discountPercent: 10,
-    stock: 80,
-    isFeatured: true,
-    tags: ['smartwatch', 'fitness', 'wearable', 'health'],
-    images: [
-      'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
-    ],
-    categoryName: 'Electronics',
-    rating: 4.3,
-    numReviews: 89,
-  },
-  {
-    title: 'Ultra-Slim Laptop 15"',
-    description: 'Powerful ultrabook with 15.6" 4K display, Intel i7 processor, 16GB RAM, 512GB SSD. Perfect for professionals and creators.',
-    price: 54999,
-    discountPercent: 5,
-    stock: 25,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['laptop', 'computer', 'ultrabook', 'professional'],
-    images: [
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500',
-    ],
-    categoryName: 'Electronics',
-    rating: 4.7,
-    numReviews: 203,
-  },
-  {
-    title: 'Classic Denim Jacket',
-    description: 'Timeless denim jacket crafted from premium cotton denim. Features a relaxed fit, brass buttons, and adjustable waist tabs.',
-    price: 1999,
-    discountPercent: 20,
-    stock: 200,
-    isTrending: true,
-    tags: ['jacket', 'denim', 'fashion', 'casual'],
-    images: [
-      'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500',
-    ],
-    categoryName: 'Fashion',
-    rating: 4.2,
-    numReviews: 67,
-  },
-  {
-    title: 'Running Sneakers Ultra',
-    description: 'Lightweight running shoes with responsive cushioning, breathable mesh upper, and durable rubber outsole. Ideal for daily runs and marathon training.',
-    price: 3499,
-    discountPercent: 0,
-    stock: 120,
-    isFeatured: true,
-    tags: ['shoes', 'running', 'sneakers', 'sports', 'fitness'],
-    images: [
-      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
-    ],
-    categoryName: 'Sports',
-    rating: 4.6,
-    numReviews: 156,
-  },
-  {
-    title: 'Stainless Steel Water Bottle',
-    description: 'Vacuum insulated water bottle that keeps drinks cold for 24 hours and hot for 12 hours. BPA-free, leak-proof lid, 750ml capacity.',
-    price: 599,
-    discountPercent: 10,
-    stock: 500,
-    tags: ['water-bottle', 'kitchen', 'eco-friendly', 'fitness'],
-    images: [
-      'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500',
-    ],
-    categoryName: 'Home & Kitchen',
-    rating: 4.4,
-    numReviews: 312,
-  },
-  {
-    title: 'The Art of Programming',
-    description: 'A comprehensive guide to modern software engineering practices. Covers clean code, design patterns, system design, and career growth strategies.',
-    price: 799,
-    discountPercent: 5,
-    stock: 300,
-    isFeatured: true,
-    tags: ['book', 'programming', 'technology', 'learning'],
-    images: [
-      'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500',
-    ],
-    categoryName: 'Books',
-    rating: 4.8,
-    numReviews: 445,
-  },
-  {
-    title: 'Yoga Mat Premium',
-    description: 'Extra thick 6mm yoga mat with non-slip surface, alignment markers, and carrying strap. Made from eco-friendly TPE material.',
-    price: 1299,
-    discountPercent: 0,
-    stock: 180,
-    isTrending: true,
-    tags: ['yoga', 'fitness', 'mat', 'exercise'],
-    images: [
-      'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500',
-    ],
-    categoryName: 'Sports',
-    rating: 4.3,
-    numReviews: 98,
-  },
-  {
-    title: 'Organic Face Serum',
-    description: 'Luxurious vitamin C and hyaluronic acid face serum. Brightens skin, reduces dark spots, and provides deep hydration. Suitable for all skin types.',
-    price: 899,
-    discountPercent: 25,
-    stock: 250,
-    isFeatured: true,
-    isTrending: true,
-    tags: ['skincare', 'beauty', 'serum', 'organic'],
-    images: [
-      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500',
-    ],
-    categoryName: 'Beauty',
-    rating: 4.6,
-    numReviews: 178,
-  },
-  {
-    title: 'Minimalist Desk Lamp',
-    description: 'Modern LED desk lamp with touch dimmer, 3 color temperature modes, and USB charging port. Flexible gooseneck design with stable weighted base.',
-    price: 1499,
-    discountPercent: 10,
-    stock: 90,
-    tags: ['lamp', 'desk', 'home', 'office', 'led'],
-    images: [
-      'https://images.unsplash.com/photo-1507473885765-e6ed057ab6fe?w=500',
-    ],
-    categoryName: 'Home & Kitchen',
-    rating: 4.1,
-    numReviews: 54,
-  },
-  {
-    title: 'Mechanical Keyboard RGB',
-    description: 'Compact 75% mechanical keyboard with hot-swappable switches, per-key RGB backlighting, PBT keycaps, and USB-C connectivity.',
-    price: 3999,
-    discountPercent: 0,
-    stock: 60,
-    isTrending: true,
-    tags: ['keyboard', 'mechanical', 'gaming', 'computer', 'rgb'],
-    images: [
-      'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500',
-    ],
-    categoryName: 'Electronics',
-    rating: 4.5,
-    numReviews: 87,
-  },
-  {
-    title: 'Canvas Tote Bag',
-    description: 'Spacious canvas tote bag with inner zipper pocket and reinforced handles. Perfect for daily use, shopping, or beach trips.',
-    price: 499,
-    discountPercent: 0,
-    stock: 400,
-    tags: ['bag', 'tote', 'canvas', 'fashion', 'eco-friendly'],
-    images: [
-      'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500',
-    ],
-    categoryName: 'Fashion',
-    rating: 4.0,
-    numReviews: 42,
-  },
-];
+const generateProducts = () => {
+  const products = [];
+  const categoriesList = ['Electronics', 'Fashion', 'Home & Kitchen', 'Books', 'Sports', 'Beauty'];
+  
+  const data = {
+    'Electronics': {
+      adjs: ['Wireless', 'Ergonomic', 'Smart', 'Ultra-Slim', 'Mechanical', 'Bluetooth', 'Noise-Cancelling', 'Portable', 'HD', '4K', 'High-Speed', 'Rechargeable', 'Compact', 'Gaming', 'Dual-Band', 'Smart-Home', 'Virtual-Reality', 'Next-Gen'],
+      nouns: ['Headphones', 'Smart Watch', 'Laptop', 'Keyboard', 'Speaker', 'Mouse', 'Monitor', 'Charger', 'Tablet', 'Earbuds', 'Power Bank', 'Webcam', 'Microphone', 'Router', 'VR Headset', 'Projector', 'Security Camera', 'SSD Drive'],
+      basePrice: 1500,
+      priceVar: 45000,
+      images: [
+        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500',
+        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500',
+        'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500',
+        'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=500',
+        'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500',
+        'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500',
+        'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500',
+        'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500'
+      ],
+      tagPool: ['electronics', 'tech', 'gadget', 'wireless', 'smart', 'hardware']
+    },
+    'Fashion': {
+      adjs: ['Classic', 'Casual', 'Slim-Fit', 'Vintage', 'Premium', 'Organic Cotton', 'Designer', 'Waterproof', 'Cozy', 'Breathable', 'Formal', 'Stretched', 'Sporty', 'Knitted', 'Lightweight', 'Denim', 'Elegant', 'Modern-Fit'],
+      nouns: ['Jacket', 'Tote Bag', 'Hoodie', 'T-Shirt', 'Jeans', 'Sneakers', 'Sunglasses', 'Scarf', 'Sweater', 'Dress Pants', 'Belt', 'Boots', 'Hat', 'Socks', 'Gloves', 'Raincoat', 'Blazer', 'Windbreaker'],
+      basePrice: 500,
+      priceVar: 4500,
+      images: [
+        'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500',
+        'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500',
+        'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
+        'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500',
+        'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500',
+        'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500',
+        'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500',
+        'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500'
+      ],
+      tagPool: ['fashion', 'apparel', 'clothing', 'style', 'casual', 'wear']
+    },
+    'Home & Kitchen': {
+      adjs: ['Minimalist', 'Stainless Steel', 'Ceramic', 'Insulated', 'Bamboo', 'Non-Stick', 'Handcrafted', 'Electric', 'Adjustable', 'Modern', 'Eco-Friendly', 'Double-Walled', 'Rotating', 'Space-Saving', 'Retro', 'Wooden', 'Smart', 'Luxury'],
+      nouns: ['Water Bottle', 'Desk Lamp', 'Coffee Mug', 'Chefs Knife', 'Cutting Board', 'Toaster', 'Air Fryer', 'Organizer', 'Storage Container', 'Blender', 'Pan', 'Spice Rack', 'Teapot', 'Serving Tray', 'Trash Can', 'Coasters', 'Dinnerware Set', 'Table Runner'],
+      basePrice: 300,
+      priceVar: 8000,
+      images: [
+        'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500',
+        'https://images.unsplash.com/photo-1507473885765-e6ed057ab6fe?w=500',
+        'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500',
+        'https://images.unsplash.com/photo-1599610928290-798c8c201df1?w=500',
+        'https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=500',
+        'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500',
+        'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=500',
+        'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=500'
+      ],
+      tagPool: ['home', 'kitchen', 'decor', 'dining', 'cooking', 'lifestyle']
+    },
+    'Books': {
+      adjs: ['The Art of', 'Introduction to', 'Mastering', 'A Guide to', 'The Secrets of', 'History of', 'Principles of', 'Lessons in', 'Advanced', 'Simplified', 'Understanding', 'Philosophy of', 'The Joy of', 'Fascinating World of', 'Essentials of', 'Handbook of', 'Journey Through', 'The Legacy of'],
+      nouns: ['Programming', 'Machine Learning', 'Financial Freedom', 'Modern Philosophy', 'Creative Writing', 'Data Science', 'World History', 'Healthy Cooking', 'Microeconomics', 'Graphic Design', 'Public Speaking', 'Digital Marketing', 'Astronomy', 'Psychology', 'Photography', 'Organic Gardening', 'Yoga Practices', 'Modern Art'],
+      basePrice: 299,
+      priceVar: 1500,
+      images: [
+        'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=500',
+        'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500',
+        'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=500',
+        'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=500',
+        'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=500',
+        'https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=500',
+        'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=500'
+      ],
+      tagPool: ['book', 'education', 'reading', 'learning', 'guide', 'literature']
+    },
+    'Sports': {
+      adjs: ['Running', 'Yoga', 'High-Performance', 'Heavy-Duty', 'Adjustable', 'Anti-Slip', 'Portable', 'Durable', 'Waterproof', 'Ergonomic', 'Lightweight', 'Professional', 'All-Weather', 'Ultra-Grip', 'Padded', 'Elastic', 'Compact', 'Aero-Dynamic'],
+      nouns: ['Sneakers Ultra', 'Mat Premium', 'Dumbbells Set', 'Resistance Bands', 'Jump Rope', 'Waterproof Backpack', 'Foam Roller', 'Sports Towel', 'Gym Bag', 'Cycling Helmet', 'Knee Sleeves', 'Tennis Racket', 'Running Belt', 'Workout Gloves', 'Yoga Blocks', 'Exercise Ball', 'Ankle Weights', 'Massage Gun'],
+      basePrice: 400,
+      priceVar: 12000,
+      images: [
+        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500',
+        'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500',
+        'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=500',
+        'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=500',
+        'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=500',
+        'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500',
+        'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500'
+      ],
+      tagPool: ['sports', 'fitness', 'exercise', 'gear', 'workout', 'training']
+    },
+    'Beauty': {
+      adjs: ['Organic', 'Vitamin C', 'Hydrating', 'Rejuvenating', 'Charcoal', 'Herbal', 'Exfoliating', 'Vegan', 'Soothe', 'Nourishing', 'Purifying', 'Anti-Aging', 'Moisturizing', 'Natural', 'Premium', 'Deep-Cleansing', 'Refreshing', 'Glow-Boost'],
+      nouns: ['Face Serum', 'Face Wash', 'Clay Mask', 'Lip Balm', 'Moisturizer Cream', 'Sunscreen SPF 50', 'Hair Oil', 'Body Scrub', 'Eye Cream', 'Toner Spray', 'Cleansing Balm', 'Night Cream', 'Hand Cream', 'Shampoo Bar', 'Conditioner Set', 'Face Roller', 'Micellar Water', 'Lip Scrub'],
+      basePrice: 200,
+      priceVar: 3500,
+      images: [
+        'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=500',
+        'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500',
+        'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=500',
+        'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=500',
+        'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=500',
+        'https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?w=500',
+        'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500'
+      ],
+      tagPool: ['beauty', 'skincare', 'cosmetics', 'grooming', 'organic', 'selfcare']
+    }
+  };
+  
+  const productsPerCategory = 18;
+  
+  for (const catName of categoriesList) {
+    const catInfo = data[catName];
+    for (let i = 0; i < productsPerCategory; i++) {
+      const adj = catInfo.adjs[i % catInfo.adjs.length];
+      const noun = catInfo.nouns[i % catInfo.nouns.length];
+      const title = `${adj} ${noun}`;
+      
+      const price = Math.round(catInfo.basePrice + Math.random() * catInfo.priceVar);
+      const discountPercent = Math.random() > 0.6 ? Math.round(5 + Math.random() * 25) : 0;
+      const stock = Math.round(10 + Math.random() * 490);
+      const rating = parseFloat((4.0 + Math.random() * 1.0).toFixed(1));
+      const numReviews = Math.round(5 + Math.random() * 500);
+      
+      const isFeatured = Math.random() > 0.8;
+      const isTrending = Math.random() > 0.8;
+      
+      const tags = [catName.toLowerCase(), ...catInfo.tagPool.sort(() => 0.5 - Math.random()).slice(0, 3)];
+      const imageIndex = i % catInfo.images.length;
+      const images = [catInfo.images[imageIndex]];
+      
+      const description = `This high-quality ${title.toLowerCase()} is perfect for your everyday needs. Designed with durability and convenience in mind, it represents the finest craftsmanship in ${catName.toLowerCase()}. Enjoy premium features, exceptional reliability, and modern style at an unbeatable value.`;
+      
+      products.push({
+        title,
+        description,
+        price,
+        discountPercent,
+        stock,
+        isFeatured,
+        isTrending,
+        tags,
+        images,
+        categoryName: catName,
+        rating,
+        numReviews
+      });
+    }
+  }
+  
+  return products;
+};
+
+const seedProducts = generateProducts();
 
 const seedDB = async () => {
   try {
