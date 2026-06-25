@@ -6,6 +6,13 @@ import { formatCurrency, calcDiscountedPrice } from '../../utils/format';
 import { useCart } from '../../context/CartContext';
 import { useWishlist } from '../../context/WishlistContext';
 
+/**
+ * ProductCard Component.
+ * Renders a premium interactive card showing product images, rating, details, and call-to-action buttons.
+ * 
+ * @param {object} props - Component properties.
+ * @param {object} props.product - The product details object to display.
+ */
 export default function ProductCard({ product }) {
   const {
     _id,
