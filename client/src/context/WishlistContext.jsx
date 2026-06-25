@@ -4,12 +4,19 @@ import wishlistService from '../services/wishlistService';
 
 const WishlistContext = createContext();
 
+/**
+ * Custom hook to access Wishlist Context.
+ * @returns {object} Wishlist context state and methods.
+ */
 export const useWishlist = () => {
   const context = useContext(WishlistContext);
   if (!context) throw new Error('useWishlist must be used within a WishlistProvider');
   return context;
 };
 
+/**
+ * Context Provider component for managing product wishlist state (guest & auth modes).
+ */
 export const WishlistProvider = ({ children }) => {
   const { isAuthenticated, token } = useAuth();
   const [wishlist, setWishlist] = useState([]);
