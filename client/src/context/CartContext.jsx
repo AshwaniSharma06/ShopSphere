@@ -5,6 +5,10 @@ import { calcDiscountedPrice } from '../utils/format';
 
 const CartContext = createContext();
 
+/**
+ * Custom hook to access Cart Context.
+ * @returns {object} Cart context state, counts, totals, and operational handlers.
+ */
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) throw new Error('useCart must be used within a CartProvider');
