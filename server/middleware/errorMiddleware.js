@@ -1,6 +1,11 @@
 /**
  * Global error handling middleware for Express.
  * Catches all errors passed via next(error) and formats a consistent JSON response.
+ * 
+ * @param {Error} err - The error object thrown or passed.
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express next middleware function.
  */
 const errorHandler = (err, req, res, next) => {
   console.error('❌ Error caught by handler:', err);
