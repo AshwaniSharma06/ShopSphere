@@ -26,13 +26,18 @@ const getProducts = async (req, res, next) => {
 
     const query = {};
 
-    // Text search
+    // Tokenized multi-word text search
     if (search) {
-      query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-        { tags: { $regex: search, $options: 'i' } },
-      ];
+      const searchTerms = search.trim().split(/\s+/).filter(Boolean);
+      if (searchTerms.length > 0) {
+        query.$and = searchTerms.map((term) => ({
+          $or: [
+            { title: { $regex: term, $options: 'i' } },
+            { description: { $regex: term, $options: 'i' } },
+            { tags: { $regex: term, $options: 'i' } },
+          ],
+        }));
+      }
     }
 
     // Category filter
