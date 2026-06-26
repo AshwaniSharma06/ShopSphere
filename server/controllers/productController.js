@@ -517,6 +517,65 @@ const getVendorStats = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Mark a product review as helpful
+ * @route   POST /api/v1/products/:id/reviews/:reviewId/helpful
+ * @access  Private
+ */
+const voteReviewHelpful = async (req, res, next) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      res.status(404);
+      throw new Error('Product not found');
+    }
+
+    const review = product.reviews.id(req.params.reviewId);
+    if (!review) {
+      res.status(404);
+      throw new Error('Review not found');
+    }
+
+    // Initialize helpfulUsers array if it doesn't exist
+    if (!review.helpfulUsers) {
+      review.helpfulUsers = [];
+    }
+
+    // Check if user already voted this review as helpful
+    const alreadyVoted = review.helpfulUsers.find(
+      (userId) => userId.toString() === req.user._id.toString()
+    );
+
+    if (alreadyVoted) {
+      // Undo vote (toggle)
+      review.helpfulUsers = review.helpfulUsers.filter(
+        (userId) => userId.toString() !== req.user._id.toString()
+      );
+      review.helpfulVotes = Math.max(0, review.helpfulVotes - 1);
+      await product.save();
+      return res.status(200).json({
+        success: true,
+        message: 'Helpful vote removed',
+        helpfulVotes: review.helpfulVotes,
+      });
+    }
+
+    // Add vote
+    review.helpfulUsers.push(req.user._id);
+    review.helpfulVotes = (review.helpfulVotes || 0) + 1;
+
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Review marked as helpful',
+      helpfulVotes: review.helpfulVotes,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
@@ -526,6 +585,7 @@ module.exports = {
   updateProduct,
   deleteProduct,
   createProductReview,
+  voteReviewHelpful,
   getProductRecommendations,
   getPersonalizedRecommendations,
   getVendorStats,

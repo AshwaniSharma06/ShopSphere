@@ -25,6 +25,16 @@ const reviewSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please provide a review comment'],
     },
+    helpfulVotes: {
+      type: Number,
+      default: 0,
+    },
+    helpfulUsers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   { timestamps: true }
 );

@@ -9,6 +9,7 @@ const {
   updateProduct,
   deleteProduct,
   createProductReview,
+  voteReviewHelpful,
   getProductRecommendations,
   getPersonalizedRecommendations,
   getVendorStats,
@@ -31,6 +32,7 @@ router.route('/:id')
   .delete(protect, authorize('admin', 'vendor'), deleteProduct);
 
 router.post('/:id/reviews', protect, createProductReview);
+router.post('/:id/reviews/:reviewId/helpful', protect, voteReviewHelpful);
 router.get('/:id/recommendations', getProductRecommendations);
 
 module.exports = router;
