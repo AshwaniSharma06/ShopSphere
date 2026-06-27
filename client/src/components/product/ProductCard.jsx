@@ -129,6 +129,9 @@ export default function ProductCard({ product }) {
               alt={title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               loading="lazy"
+              onError={(e) => {
+                e.target.src = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500';
+              }}
             />
           </Link>
 
