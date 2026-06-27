@@ -127,6 +127,7 @@ const getFeaturedProducts = async (req, res, next) => {
   try {
     const limit = Math.min(20, Number(req.query.limit) || 8);
     const products = await Product.find({ isFeatured: true })
+      .select('title price discountPercent images rating numReviews category isFeatured isTrending stock')
       .populate('category', 'name slug')
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -147,6 +148,7 @@ const getTrendingProducts = async (req, res, next) => {
   try {
     const limit = Math.min(20, Number(req.query.limit) || 8);
     const products = await Product.find({ isTrending: true })
+      .select('title price discountPercent images rating numReviews category isFeatured isTrending stock')
       .populate('category', 'name slug')
       .sort({ rating: -1 })
       .limit(limit)
