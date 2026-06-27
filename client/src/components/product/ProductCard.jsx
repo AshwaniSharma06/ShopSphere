@@ -166,6 +166,7 @@ export default function ProductCard({ product }) {
               border: `1px solid ${inWishlist ? 'rgba(236,72,153,0.3)' : 'rgba(255,255,255,0.1)'}`,
             }}
             title={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+            aria-label={inWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
           >
             <Heart className={`h-4 w-4 ${inWishlist ? 'fill-cyber text-cyber' : 'text-frost'}`} />
           </button>
@@ -187,6 +188,7 @@ export default function ProductCard({ product }) {
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-obsidian transition-all duration-200"
                 style={{ background: 'linear-gradient(135deg, #00D4FF, #00A3CC)', boxShadow: '0 0 15px rgba(0,212,255,0.3)' }}
                 title="Add to Cart"
+                aria-label={`Add ${title} to Cart`}
               >
                 <ShoppingCart className="h-4 w-4" /> Add to Cart
               </button>
@@ -248,6 +250,7 @@ export default function ProductCard({ product }) {
                 className="md:hidden p-2 rounded-lg transition-all active:scale-95"
                 style={{ background: 'rgba(0,212,255,0.1)', color: '#00D4FF', border: '1px solid rgba(0,212,255,0.2)' }}
                 title="Add to Cart"
+                aria-label={`Add ${title} to Cart`}
               >
                 <ShoppingCart className="h-3.5 w-3.5" />
               </button>
