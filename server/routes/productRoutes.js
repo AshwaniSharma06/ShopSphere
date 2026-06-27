@@ -13,6 +13,7 @@ const {
   getProductRecommendations,
   getPersonalizedRecommendations,
   getVendorStats,
+  getProductStats,
 } = require('../controllers/productController');
 const { protect, authorize } = require('../middleware/authMiddleware');
 
@@ -20,6 +21,7 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 router.get('/featured', getFeaturedProducts);
 router.get('/trending', getTrendingProducts);
 router.get('/recommendations', getPersonalizedRecommendations);
+router.get('/stats/summary', getProductStats);
 router.get('/vendor/stats', protect, authorize('vendor'), getVendorStats);
 
 router.route('/')

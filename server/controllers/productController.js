@@ -592,6 +592,41 @@ const voteReviewHelpful = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get general statistics of products (avg price, min/max price, count)
+ * @route   GET /api/v1/products/stats/summary
+ * @access  Public
+ */
+const getProductStats = async (req, res, next) => {
+  try {
+    const stats = await Product.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalProducts: { $sum: 1 },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+          avgRating: { $avg: '$rating' },
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      stats: stats[0] || {
+        totalProducts: 0,
+        avgPrice: 0,
+        minPrice: 0,
+        maxPrice: 0,
+        avgRating: 0,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
@@ -605,4 +640,5 @@ module.exports = {
   getProductRecommendations,
   getPersonalizedRecommendations,
   getVendorStats,
+  getProductStats,
 };
