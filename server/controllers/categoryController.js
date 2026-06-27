@@ -23,7 +23,12 @@ const createCategory = async (req, res, next) => {
   try {
     const { name, image, description } = req.body;
 
-    const existing = await Category.findOne({ name: new RegExp(`^${name}$`, 'i') });
+    if (!name || typeof name !== 'string' || !name.trim()) {
+      res.status(400);
+      throw new Error('Please provide a valid category name');
+    }
+
+    const existing = await Category.findOne({ name: new RegExp(`^${name.trim()}$`, 'i') });
     if (existing) {
       res.status(400);
       throw new Error('Category already exists');
