@@ -255,6 +255,22 @@ const createProductReview = async (req, res, next) => {
   try {
     const { rating, title, comment } = req.body;
 
+    if (rating === undefined || rating === null || rating === '') {
+      res.status(400);
+      throw new Error('Rating is required');
+    }
+
+    const numRating = Number(rating);
+    if (isNaN(numRating) || numRating < 1 || numRating > 5) {
+      res.status(400);
+      throw new Error('Rating must be a number between 1 and 5');
+    }
+
+    if (!comment || typeof comment !== 'string' || !comment.trim()) {
+      res.status(400);
+      throw new Error('Please provide a valid review comment');
+    }
+
     const product = await Product.findById(req.params.id);
     if (!product) {
       res.status(404);
